@@ -140,7 +140,7 @@
                 liveSearch: true,
                 size: 5,
                 actionsBox: true,
-                title: $.fn.selectpicker.defaults.noneResultsText
+                title: $.fn.selectpicker.defaults.noneSelectedText
             });
 
             if (this.selectedOptions) {
