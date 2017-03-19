@@ -6,7 +6,6 @@ use LaravelEnso\Select\SelectListBuilder;
 
 trait SelectListBuilderTrait
 {
-
     public function getOptionsList()
     {
         $attribute = isset($this->selectAttribute) ? $this->selectAttribute : 'name';
