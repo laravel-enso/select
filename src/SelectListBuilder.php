@@ -44,7 +44,7 @@ class SelectListBuilder
                 continue;
             }
 
-            $this->query = $this->query->whereHas($this->pivotParams[$key], function($query) use ($value) {
+            $this->query = $this->query->whereHas($this->pivotParams[$key], function ($query) use ($value) {
                 $query->whereId($value);
             });
         }
