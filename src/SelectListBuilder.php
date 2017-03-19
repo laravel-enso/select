@@ -41,11 +41,12 @@ class SelectListBuilder
         foreach ($customParams as $key => $value) {
             if (!in_array($key, array_keys($this->pivotParams))) {
                 $this->query = $this->query->where($key, $value);
-            } else {
-                $this->query = $this->query->whereHas($this->pivotParams[$key], function ($query) use ($value) {
-                    $this->query->whereId($value);
-                });
+                continue;
             }
+
+            $this->query = $this->query->whereHas($this->pivotParams[$key], function($query) use ($value) {
+                $query->whereId($value);
+            });
         }
     }
 
