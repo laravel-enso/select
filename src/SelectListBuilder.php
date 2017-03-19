@@ -4,7 +4,6 @@ namespace LaravelEnso\Select;
 
 class SelectListBuilder
 {
-
     private $attribute; // 'name' => optional
     private $pivotParams; // ['column' => 'table'] => optional
     private $class; // 'App\Model' => required
@@ -12,10 +11,10 @@ class SelectListBuilder
 
     public function __construct($class, $attribute, $pivotParams)
     {
-        $this->class       = $class;
-        $this->attribute   = $attribute;
+        $this->class = $class;
+        $this->attribute = $attribute;
         $this->pivotParams = $pivotParams;
-        $this->query       = $class::query();
+        $this->query = $class::query();
     }
 
     public function getOptionsList()
@@ -23,14 +22,13 @@ class SelectListBuilder
         $ids = (array) request('selected');
 
         if (request('customParams')) {
-
             $this->processPivotParams();
         }
 
-        $models   = $this->query->where($this->attribute, 'like', '%' . request('query') . '%')
+        $models = $this->query->where($this->attribute, 'like', '%'.request('query').'%')
                         ->orderBy($this->attribute)->limit(10)->get();
         $selected = $this->query->whereIn('id', $ids)->get();
-        $result   = $models->merge($selected)->pluck('name', 'id');
+        $result = $models->merge($selected)->pluck('name', 'id');
         $response = static::buildSelectList($result);
 
         return $response;
@@ -41,14 +39,10 @@ class SelectListBuilder
         $customParams = json_decode(request('customParams'));
 
         foreach ($customParams as $key => $value) {
-
             if (!in_array($key, array_keys($this->pivotParams))) {
-
                 $this->query = $this->query->where($key, $value);
             } else {
-
                 $this->query = $this->query->whereHas($this->pivotParams[$key], function ($query) use ($value) {
-
                     $this->query->whereId($value);
                 });
             }
@@ -60,7 +54,6 @@ class SelectListBuilder
         $response = [];
 
         foreach ($data as $key => $value) {
-
             $response[] = [
 
                 'key'   => $key,
