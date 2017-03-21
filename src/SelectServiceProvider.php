@@ -14,7 +14,7 @@ class SelectServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../resources/assets/js/components/core' => base_path('resources/assets/js/components/core'),
+            __DIR__.'/../resources/assets/js/components' => resource_path('assets/js/components/laravel-enso'),
         ], 'select-component');
     }
 
