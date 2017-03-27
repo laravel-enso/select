@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelEnso\Select\App\Classes;
+namespace LaravelEnso\Select\app\Classes;
 
 class SelectListBuilder
 {

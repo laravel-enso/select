@@ -1,8 +1,8 @@
 <?php
 
-namespace LaravelEnso\Select\App\Traits;
+namespace LaravelEnso\Select\app\Traits;
 
-use LaravelEnso\Select\App\Classes\SelectListBuilder;
+use LaravelEnso\Select\app\Classes\SelectListBuilder;
 
 trait SelectListBuilderTrait
 {
