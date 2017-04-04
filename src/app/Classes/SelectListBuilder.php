@@ -9,12 +9,12 @@ class SelectListBuilder
     private $class; // 'App\Model' => required
     private $query;
 
-    public function __construct($class, $attribute, $pivotParams)
+    public function __construct($class, $attribute, $pivotParams, $query = null)
     {
         $this->class = $class;
         $this->attribute = $attribute;
         $this->pivotParams = $pivotParams;
-        $this->query = $class::query();
+        $this->query = $query ?: $class::query();
     }
 
     public function getOptionsList()
