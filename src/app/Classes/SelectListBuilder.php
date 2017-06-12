@@ -68,7 +68,7 @@ class SelectListBuilder
 
     public static function buildSelectList($data)
     {
-        $response = $data->map(function($value, $key) {
+        $response = $data->map(function ($value, $key) {
             return [
                 'key'   => $key,
                 'value' => $value,
