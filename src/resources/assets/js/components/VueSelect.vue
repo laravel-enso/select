@@ -2,7 +2,7 @@
     <div :id="'bs-select-' + _uid">
         <i class="fa fa-times reset btn-box-tool"
            @click="removeSelection"
-           v-if="!multiple && reset && selectedOptions">
+           v-if="reset && !multiple && selectedOptions">
         </i>
         <select v-model="selectedOptions"
                 :multiple="multiple"
@@ -51,6 +51,14 @@
                 type: Boolean,
                 default: false
             },
+            params: {
+                type: Object,
+                default: null
+            },
+            pivotParams: {
+                type: Object,
+                default: null
+            },
             customParams: {
                 type: Object,
                 default: null
@@ -59,12 +67,16 @@
 
         computed: {
             isServerSide() {
-                return this.options ? false : true;
+                return this.options === null;
             }
         },
 
         watch: {
-            customParams: {
+            params: {
+                handler: 'getOptionsList',
+                deep: true
+            },
+            pivotParams: {
                 handler: 'getOptionsList',
                 deep: true
             },
@@ -79,35 +91,42 @@
 
         data() {
             return {
-                optionsList: this.options || [],
+                optionsList: this.options || {},
                 selectedOptions: this.selected ? this.selected : (this.multiple ? [] : this.selected)
             };
         },
 
         methods: {
             getOptionsList() {
-                let query = $('#bs-select-' + this._uid + ' input').val() || '', //we don't want undefined
-                    params = {
-                        customParams: this.customParams,
-                        query: query,
-                        selected: this.selectedOptions
-                    };
-
-                axios.get(this.source, {params: params}).then(response => {
-                    this.optionsList = response.data;
-
-                    if (this.multiple && this.optionsList.length === 0) {
-                        this.optionsList = [ { key: null, value: ''} ];
+                axios.get(this.source, {params: this.getParams()}).then(response => {
+                    this.optionsList = this.multiple && Object.keys(response.data).length === 0 && this.getQuery() ?
+                        { 1: { key: null, value: ''} } : response.data;
+                }).catch(error => {
+                    if (error.response.data.level) {
+                        toastr[error.response.data.level](error.response.data.message);
                     }
                 }).then(() => {
-                        $('#select-' + this._uid).selectpicker('refresh');
+                    $('#select-' + this._uid).selectpicker('refresh');
                 });
+            },
+            getParams() {
+                let query = this.getQuery();
+
+                return {
+                    params: this.params,
+                    pivotParams: this.pivotParams,
+                    customParams: this.customParams,
+                    query: query,
+                    selected: this.selectedOptions
+                };
+            },
+            getQuery() {
+                return $('#bs-select-' + this._uid + ' input').val() || ''; //we don't want undefined
             },
             removeSelection() {
                 this.selectedOptions = '';
-                //we need next tick for the race condition when selectpicker
-                //runs before vue finishes updating the DOM
-                this.$nextTick(() => {
+
+                this.$nextTick(() => { //we need next tick
                     $('#select-' + this._uid).selectpicker('refresh');
                     this.$emit('input', this.selectedOptions);
                 });
@@ -142,8 +161,7 @@
 
             if (this.selectedOptions) {
                 this.$emit('input', this.selectedOptions);
-                //necesary for using without server-side
-                $('#select-' + this._uid).selectpicker('val', this.selectedOptions);
+                $('#select-' + this._uid).selectpicker('val', this.selectedOptions); //necesary for using without server-side
             }
 
             if (this.isServerSide) {

@@ -4,64 +4,77 @@ namespace LaravelEnso\Select\app\Classes;
 
 class SelectListBuilder
 {
-    private $attribute; // 'name' => optional
-    private $pivotParams; // ['column' => 'table'] => optional
-    private $class; // 'App\Model' => required
+    private $attribute;
+    private $class;
     private $query;
+    private $result;
 
-    public function __construct($class, $attribute, $pivotParams, $query = null)
+    public function __construct($class, $attribute, $query = null)
     {
         $this->class = $class;
         $this->attribute = $attribute;
-        $this->pivotParams = $pivotParams;
-        $this->query = $query ?: $class::query();
+        $this->query = $query ?: $this->class::query();
+        $this->run();
     }
 
     public function getOptionsList()
     {
-        $ids = (array) request('selected');
+        return $this->result;
+    }
 
-        if (request('customParams')) {
-            $this->processPivotParams();
+    private function run()
+    {
+        $this->processParams();
+        $this->processPivotParams();
+        $this->setResult();
+    }
+
+    private function processParams()
+    {
+        if (!request()->has('params')) {
+            return false;
         }
 
-        $models = $this->query->where($this->attribute, 'like', '%'.request('query').'%')
-                        ->orderBy($this->attribute)->limit(10)->get();
-        $selected = $this->query->whereIn('id', $ids)->get();
-        $result = $models->merge($selected)->pluck('name', 'id');
-        $response = static::buildSelectList($result);
+        $params = json_decode(request('params'));
 
-        return $response;
+        foreach ($params as $column => $value) {
+            $this->query->where($column, $value);
+        }
     }
 
     private function processPivotParams()
     {
-        $customParams = json_decode(request('customParams'));
+        if (!request()->has('pivotParams')) {
+            return false;
+        }
 
-        foreach ($customParams as $key => $value) {
-            if (!in_array($key, array_keys($this->pivotParams))) {
-                $this->query = $this->query->where($key, $value);
-                continue;
-            }
+        $pivotParams = json_decode(request('pivotParams'));
 
-            $this->query = $this->query->whereHas($this->pivotParams[$key], function ($query) use ($value) {
-                $query->whereId($value);
+        foreach ($pivotParams as $table => $param) {
+            $this->query = $this->query->whereHas($table, function ($query) use ($param) {
+                $query->whereId($param->id);
             });
         }
     }
 
+    private function setResult()
+    {
+        $ids = (array) request('selected'); // we need it in order to work for both simple and multiple select, or null
+        $models = $this->query->where($this->attribute, 'like', '%'.request('query').'%')
+                        ->orderBy($this->attribute)->limit(10)->get();
+        $selected = $this->class::whereIn('id', $ids)->get();
+        $this->result = $this->buildSelectList($models->merge($selected)->pluck('name', 'id'));
+    }
+
     public static function buildSelectList($data)
     {
-        $response = [];
-
-        foreach ($data as $key => $value) {
-            $response[] = [
-
+        $response = $data->map(function($value, $key) {
+            return [
                 'key'   => $key,
                 'value' => $value,
             ];
-        }
+        });
 
-        return json_encode($response);
+        return $response;
     }
 }
