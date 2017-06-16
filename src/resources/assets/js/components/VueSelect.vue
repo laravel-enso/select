@@ -106,9 +106,7 @@
                     this.optionsList = this.multiple && Object.keys(response.data).length === 0 && this.getQuery() ?
                         { 1: { key: null, value: ''} } : response.data;
                 }).catch(error => {
-                    if (error.response.data.level) {
-                        toastr[error.response.data.level](error.response.data.message);
-                    }
+                    this.reportEnsoException(error);
                 }).then(() => {
                     $('#select-' + this._uid).selectpicker('refresh');
                 });
