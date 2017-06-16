@@ -51,6 +51,10 @@
                 type: Boolean,
                 default: false
             },
+            placeholder: {
+                type: String,
+                default: null
+            },
             params: {
                 type: Object,
                 default: null
@@ -151,7 +155,7 @@
                     liveSearch: true,
                     size: 5,
                     actionsBox: true,
-                    title: $.fn.selectpicker.defaults.noneSelectedText
+                    title: this.placeholder || $.fn.selectpicker.defaults.noneSelectedText
                 });
             }
         },

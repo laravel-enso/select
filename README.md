@@ -50,6 +50,7 @@ In order to work the component needs a data source. The data source can be eithe
 	`name` - the name of the input (optional)
 	`multiple` - multiple selectable options (optional)
 	`selected` - the selected option. Can be primary value or Array for select with multiple (optional)
+	`placeholder` - custom placeholder when no option in selected (optional)
 	`params` - list of parameters from the same table. format: params: { 'fieldName': 'fieldValue' } (optional)
 	`pivotParams` - list of parameters (ids) from pivot tables. format: pivotParams: { 'table': { id: value } } (optional)
 	`customParams` - anything. Using customParams implies that you rewrite the 'getOptionsList' method from the SelectListBuilder Trait. You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
