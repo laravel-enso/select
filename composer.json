@@ -1,7 +1,7 @@
 {
     "name": "laravel-enso/select",
-    "description": "Select data builder",
-    "type": "library",
+    "description": "Bootstrap Select data builder with server-side and a vue component",
+    "type": "dependency",
     "license": "MIT",
     "authors": [
         {
