@@ -190,4 +190,9 @@
         cursor: pointer;
     }
 
+    .bootstrap-select.btn-group .dropdown-menu {
+        width: 100%;
+        min-width: 0;
+    }
+
 </style>
