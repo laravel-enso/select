@@ -70,12 +70,12 @@ class SelectListBuilder
     {
         $response = collect();
 
-        $data->each(function ($value, $key) use ($response) {
+        foreach ($data as $key => $value) {
             $response->push([
                 'key'   => $key,
                 'value' => $value,
             ]);
-        });
+        }
 
         return $response;
     }
