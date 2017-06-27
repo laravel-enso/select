@@ -6,6 +6,14 @@
 
 [Bootstrap Select](https://silviomoreto.github.io/bootstrap-select/) data builder with server-side data fetching capability and a VueJS component
 
+### Details
+
+- VueJS select component, integrated with Bootstrap Select
+- permits getting the select options via ajax calls or given directly, as a parameter
+- when getting the data via ajax, it can take various parameters for results filtering
+- for the back-end, the packages comes with a trait for easy retrieval and formatting of data (in order to make it compatible with the component)
+- CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style 
+
 ### Installation Steps
 
 1. Add `LaravelEnso\Select\SelectServiceProvider::class` to `config/app.php`
