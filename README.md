@@ -55,10 +55,15 @@ In order to work the component needs a data source. The data source can be eithe
 	`pivotParams` - list of parameters (ids) from pivot tables. format: pivotParams: { 'table': { id: value } } (optional)
 	`customParams` - anything. Using customParams implies that you rewrite the 'getOptionsList' method from the SelectListBuilder Trait. You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
 
-### Can publish
+### Publishes
+
  - `php artisan vendor:publish --tag=select-component` - publishes the VueJS component
- - `php artisan vendor:publish --tag=update` - a common alias for when wanting to update the VueJS component, 
+ - `php artisan vendor:publish --tag=enso-update` - a common alias for when wanting to update the VueJS component, 
  once a newer version is released
+
+### Notes
+
+The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
 ### Contributions
 

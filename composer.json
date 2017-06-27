@@ -1,16 +1,16 @@
 {
     "name": "laravel-enso/select",
-    "description": "Bootstrap Select data builder with server-side and a vue component",
+    "description": "Bootstrap Select data builder with server-side data fetching capability and a VueJS component",
     "type": "dependency",
     "license": "MIT",
     "authors": [
         {
-            "name": "mishu",
+            "name": "Mishu",
             "email": "mishu@xtelecom.ro"
         }
     ],
     "require": {
-        "php": ">=5.6.4",
+        "php": ">=7.1.0",
         "laravel/framework": "5.4.*"
     },
     "autoload": {
