@@ -6,6 +6,10 @@
 
 [Bootstrap Select](https://silviomoreto.github.io/bootstrap-select/) data builder with server-side data fetching capability and a VueJS component
 
+[![Watch the demo](https://laravel-enso.github.io/select/screenshots/Selection_031.png)](https://laravel-enso.github.io/select/videos/demo_01.webm)
+
+<sup>click on the photo to view a short demo in compatible browsers</sup>
+
 ### Details
 
 - VueJS select component, integrated with Bootstrap Select
@@ -51,7 +55,8 @@
 
 ### Options
 
-In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array. In conclusion the component requires one of the two options `route` or `options` presented below:
+In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array. 
+In conclusion the component requires one of the two options `route` or `options` presented below:
 
 	`source` - Only for server-side. The route suffix for your controller, getOptionsList will be added under the hood.
 	`options` - Only where you don't need server-side. Options is an Object built with the 'buildSelectList' method from the 'SelectListBuilder' Trait.
