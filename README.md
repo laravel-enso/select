@@ -1,4 +1,4 @@
-<!--h--> 
+<!--h-->
 # Select
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c6799b0705d34fdab5cd100e7cfe6312)](https://www.codacy.com/app/laravel-enso/Select?utm_source=github.com&utm_medium=referral&utm_content=laravel-enso/Select&utm_campaign=badger)
 [![StyleCI](https://styleci.io/repos/85489940/shield?branch=master)](https://styleci.io/repos/85489940)
@@ -19,7 +19,7 @@
 - permits getting the select options via ajax calls or given directly, as a parameter
 - when getting the data via ajax, it can take various parameters for results filtering
 - for the back-end, the packages comes with a trait for easy retrieval and formatting of data (in order to make it compatible with the component)
-- CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style 
+- CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style
 
 ### Installation Steps
 
@@ -56,7 +56,7 @@
 
 ### Options
 
-In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array. 
+In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array.
 In conclusion the component requires one of the two options `route` or `options` presented below:
 
 - `source` - Only for server-side. The route suffix for your controller, getOptionsList will be added under the hood.
@@ -72,14 +72,14 @@ In conclusion the component requires one of the two options `route` or `options`
 ### Publishes
 
  - `php artisan vendor:publish --tag=select-component` - publishes the VueJS component
- - `php artisan vendor:publish --tag=enso-update` - a common alias for when wanting to update the VueJS component, 
+ - `php artisan vendor:publish --tag=enso-update` - a common alias for when wanting to update the VueJS component,
  once a newer version is released
 
 ### Notes
 
 You cannot use model computed attributes to display attributes when using the serverside mode of the select.
 
-You can have the serverside route permissions generated automatically when creating permissions for a resource controller. 
+You can have the serverside route permissions generated automatically when creating permissions for a resource controller.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
