@@ -1,12 +1,21 @@
 {
     "name": "laravel-enso/select",
     "description": "Bootstrap Select data builder with server-side data fetching capability and a VueJS component",
-    "type": "dependency",
+    "keywords": [
+        "laravel-enso",
+        "select",
+        "bootstrap-select",
+        "select-server-side"
+    ],
+    "homepage": "https://github.com/laravel-enso/Select",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Mishu",
-            "email": "mishu@xtelecom.ro"
+            "name": "Adrian Ocneanu",
+            "email": "aocneanu@gmail.com",
+            "homepage": "https://laravel-enso.com",
+            "role": "Developer"
         }
     ],
     "require": {
@@ -16,6 +25,14 @@
     "autoload": {
         "psr-4": {
             "LaravelEnso\\Select\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelEnso\\SelectServiceProvider"
+            ],
+            "aliases": {}
         }
     }
 }
