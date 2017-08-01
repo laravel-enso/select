@@ -59,7 +59,7 @@ class SelectListBuilder
 
     private function setResult()
     {
-        $ids = (array) request('selected'); // we need it in order to work for both simple and multiple select, or null
+        $ids = (array) request('selected');
         $models = $this->query->where($this->attribute, 'like', '%'.request('query').'%')
                         ->orderBy($this->attribute)->limit(10)->get();
         $selected = $this->class::whereIn('id', $ids)->get();
