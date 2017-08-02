@@ -63,7 +63,7 @@ class SelectListBuilder
     {
         $ids = (array) request('selected');
         $this->query->where(function ($query) {
-            collect($this->selectAttributes)->each(function($attribute) use ($query) {
+            collect($this->selectAttributes)->each(function ($attribute) use ($query) {
                 $query->orWhere($attribute, 'like', '%'.request('query').'%');
             });
         });
