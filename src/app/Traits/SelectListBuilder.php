@@ -8,8 +8,9 @@ trait SelectListBuilder
 {
     public function getOptionsList()
     {
-        $attribute = isset($this->selectAttribute) ? $this->selectAttribute : 'name';
-        $selectListBuilder = new ListBuilder($this->selectSourceClass, $attribute);
+        $selectAttributes = isset($this->selectAttributes) ? $this->selectAttributes : 'name';
+        $displayAttribute = isset($this->displayAttribute) ? $this->displayAttribute : 'name';
+        $selectListBuilder = new ListBuilder($this->selectSourceClass, $selectAttributes, $displayAttribute);
 
         return $selectListBuilder->getOptionsList();
     }

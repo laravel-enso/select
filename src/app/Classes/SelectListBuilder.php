@@ -4,15 +4,17 @@ namespace LaravelEnso\Select\app\Classes;
 
 class SelectListBuilder
 {
-    private $attribute;
+    private $selectAttributes;
+    private $displayAttribute;
     private $class;
     private $query;
     private $result;
 
-    public function __construct($class, $attribute, $query = null)
+    public function __construct($class, $selectAttributes, $displayAttribute, $query = null)
     {
         $this->class = $class;
-        $this->attribute = $attribute;
+        $this->selectAttributes = $selectAttributes;
+        $this->displayAttribute = $displayAttribute;
         $this->query = $query ?: $this->class::query();
         $this->run();
     }
@@ -60,10 +62,17 @@ class SelectListBuilder
     private function setResult()
     {
         $ids = (array) request('selected');
-        $models = $this->query->where($this->attribute, 'like', '%'.request('query').'%')
-                        ->orderBy($this->attribute)->limit(10)->get();
+        $this->query->where(function ($query) {
+            collect($this->selectAttributes)->each(function($attribute) use ($query) {
+                $query->orWhere($attribute, 'like', '%'.request('query').'%');
+            });
+        });
+
+        $models = $this->query->limit(10)->get();
         $selected = $this->class::whereIn('id', $ids)->get();
-        $this->result = $this->buildSelectList($models->merge($selected)->pluck('name', 'id'));
+        $this->result = $this->buildSelectList(
+            $models->merge($selected)->pluck($this->displayAttribute, 'id')
+        );
     }
 
     public static function buildSelectList($data)
