@@ -10,7 +10,8 @@ trait SelectListBuilder
     {
         $selectAttributes = isset($this->selectAttributes) ? $this->selectAttributes : 'name';
         $displayAttribute = isset($this->displayAttribute) ? $this->displayAttribute : 'name';
-        $selectListBuilder = new ListBuilder($this->selectSourceClass, $selectAttributes, $displayAttribute);
+        $selectListBuilder =
+            new ListBuilder($this->selectSourceClass, $selectAttributes, $displayAttribute);
 
         return $selectListBuilder->getOptionsList();
     }
