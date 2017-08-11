@@ -9,6 +9,7 @@ class SelectListBuilder
     private $class;
     private $query;
     private $result;
+    private $selected;
 
     public function __construct($class, $selectAttributes, $displayAttribute, $query = null)
     {
@@ -28,6 +29,8 @@ class SelectListBuilder
     {
         $this->processParams();
         $this->processPivotParams();
+        $this->setSelected();
+        $this->processQuery();
         $this->setResult();
     }
 
@@ -59,19 +62,28 @@ class SelectListBuilder
         }
     }
 
-    private function setResult()
+    private function setSelected()
     {
-        $ids = (array) request('selected');
+        $query = clone $this->query;
+        $selected = (array) request('value');
+        $this->selected = $query->whereIn('id', $selected)->get();
+    }
+
+    private function processQuery()
+    {
         $this->query->where(function ($query) {
             collect($this->selectAttributes)->each(function ($attribute) use ($query) {
                 $query->orWhere($attribute, 'like', '%'.request('query').'%');
             });
         });
+    }
 
+    private function setResult()
+    {
         $models = $this->query->limit(10)->get();
-        $selected = $this->class::whereIn('id', $ids)->get();
+
         $this->result = $this->buildSelectList(
-            $models->merge($selected)->pluck($this->displayAttribute, 'id')
+            $models->merge($this->selected)->pluck($this->displayAttribute, 'id')
         );
     }
 

@@ -1,22 +1,24 @@
 <template>
-    <div :id="'bs-select-' + _uid">
-        <i class="fa fa-times reset btn-box-tool"
-           @click="removeSelection"
-           v-if="reset && !multiple && selectedOptions">
+
+    <div :id="'bs-select-' + _uid"
+        class="vue-select">
+        <i class="fa fa-times clear-button btn-box-tool"
+           @click="clear()"
+           v-if="clearButton">
         </i>
-        <select v-model="selectedOptions"
-                :multiple="multiple"
-                :id="'select-' + _uid"
-                :name="name"
-                :disabled="disabled"
-                class="form-control"
-                @change="$emit('input', selectedOptions)">
-            <option v-for="option in optionsList"
-                    :value="option.key"
-                    v-html="option.value">
+        <select v-selectpicker
+            :multiple="multiple"
+            :id="'select-' + _uid"
+            :name="name"
+            :disabled="disabled"
+            :class="selectClass">
+            <option v-for="option in optionList"
+                :value="option.key"
+                v-html="option.value">
             </option>
         </select>
     </div>
+
 </template>
 
 <script>
@@ -27,6 +29,13 @@
             name: {
                 type: String,
                 default: null
+            },
+            value: {
+                default: null
+            },
+            selectClass: {
+                type: String,
+                default: 'form-control'
             },
             disabled: {
                 type: Boolean,
@@ -40,20 +49,11 @@
                 type: String,
                 default: null
             },
-            selected: {
-                default: null
-            },
             options: {
                 type: Array,
-                default: null
-            },
-            reset: {
-                type: Boolean,
-                default: false
-            },
-            placeholder: {
-                type: String,
-                default: null
+                default() {
+                    return [];
+                }
             },
             params: {
                 type: Object,
@@ -70,111 +70,109 @@
         },
 
         computed: {
+            clearButton() {
+                return !this.disabled && !this.multiple && this.value;
+            },
             isServerSide() {
-                return this.options === null;
+                return this.source !== null;
+            },
+            element() {
+                return $('#select-' + this._uid);
+            },
+            query() {
+                return $('#bs-select-' + this._uid + ' input');
+            }
+        },
+
+        directives: {
+            selectpicker: {
+                inserted(element, binding, vnode) {
+                    $(element).selectpicker({
+                        actionsBox: true,
+                        liveSearch: true,
+                        size: 5
+                    });
+
+                    $(element).selectpicker('val', vnode.context.value);
+
+                    $(element).on('changed.bs.select', function() {
+                        vnode.context.$emit('input', $(element).val());
+                    });
+                },
+                unbind(element, binding, vnode) {
+                    $(element).off().selectpicker('destroy');
+                }
             }
         },
 
         watch: {
             params: {
-                handler: 'getOptionsList',
+                handler() {
+                    this.getOptionList();
+                },
                 deep: true
             },
             pivotParams: {
-                handler: 'getOptionsList',
+                handler() {
+                    this.getOptionList();
+                },
                 deep: true
             },
-            selected: {
-                handler: 'handleSelectedChange'
-            },
-            options: {
-                handler: 'handleOptionsChange',
-                deep: true
+            value: {
+                handler() {
+                    this.element.selectpicker('val', this.value);
+                    this.$emit('input', this.value);
+                }
             }
         },
 
         data() {
             return {
-                optionsList: this.options || {},
-                selectedOptions: this.selected ? this.selected : (this.multiple ? [] : this.selected)
+                optionList: this.options,
             };
         },
 
         methods: {
-            getOptionsList() {
+            getOptionList() {
                 axios.get(this.source, {params: this.getParams()}).then(response => {
-                    this.optionsList = this.multiple && Object.keys(response.data).length === 0 && this.getQuery() ?
-                        { 1: { key: null, value: ''} } : response.data;
+                    this.optionList = response.data.length === 0 && this.getQuery() ?
+                        [{ key: null, value: ''}] : response.data;
                 }).catch(error => {
                     this.reportEnsoException(error);
                 }).then(() => {
-                    $('#select-' + this._uid).selectpicker('refresh');
+                    this.element.selectpicker('refresh');
+
+                    if (!this.value || !this.element.val()) {
+                        this.clear();
+                    }
                 });
             },
             getParams() {
-                let query = this.getQuery();
-
                 return {
                     params: this.params,
                     pivotParams: this.pivotParams,
                     customParams: this.customParams,
-                    query: query,
-                    selected: this.selectedOptions
+                    query: this.getQuery(),
+                    value: this.value
                 };
             },
+            addQueryListener() {
+                let self = this;
+                this.query.on('input', _.throttle(self.getOptionList, 200));
+            },
             getQuery() {
-                return $('#bs-select-' + this._uid + ' input').val() || ''; //we don't want undefined
+                return this.query.val() || ''; //we don't want undefined
             },
-            removeSelection() {
-                this.selectedOptions = this.multiple ? [] : '';
-
-                this.$nextTick(() => { //we need next tick
-                    $('#select-' + this._uid).selectpicker('refresh');
-                    this.$emit('input', this.selectedOptions);
-                });
-            },
-            handleSelectedChange() {
-                this.selectedOptions = this.selected;
-
-                if (this.isServerSide) {
-                    return this.getOptionsList();
-                }
-
-                $('#select-' + this._uid).selectpicker('val', this.selectedOptions);
-                this.$emit('input', this.selectedOptions);
-            },
-            handleOptionsChange() {
-                this.optionsList = this.options;
-                this.removeSelection();
-            },
-            init() {
-                $('#select-' + this._uid).selectpicker({
-                    width: '100%',
-                    liveSearch: true,
-                    size: 5,
-                    actionsBox: true,
-                    title: this.placeholder || $.fn.selectpicker.defaults.noneSelectedText
-                });
+            clear() {
+                this.element.selectpicker('val', this.multiple ? [] : '').trigger('changed.bs.select');
             }
         },
 
         mounted() {
-            this.init();
-
-            if (this.selectedOptions) {
-                this.$emit('input', this.selectedOptions);
-                $('#select-' + this._uid).selectpicker('val', this.selectedOptions); //necesary for using without server-side
-            }
-
             if (this.isServerSide) {
-                this.getOptionsList();
-                let self = this;
-                $('#bs-select-' + this._uid + ' input').on('input', _.throttle(self.getOptionsList, 200));
+                this.getOptionList();
+                this.addQueryListener();
             }
-        },
-
-        beforeDestroy() {
-            $('#select-' + this._uid).selectpicker('destroy');
         }
     }
 
@@ -182,11 +180,11 @@
 
 <style>
 
-    i.reset {
+    .vue-select > i.clear-button {
         z-index: 10;
         position: absolute;
-        right: 35px;
-        bottom: 24px;
+        right: 45px;
+        bottom: 20px;
         cursor: pointer;
     }
 
