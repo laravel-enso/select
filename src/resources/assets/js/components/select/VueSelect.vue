@@ -135,16 +135,12 @@
         methods: {
             getOptionList() {
                 axios.get(this.source, {params: this.getParams()}).then(response => {
-                    this.optionList = response.data.length === 0 && this.getQuery() ?
-                        [{ key: null, value: ''}] : response.data;
+                    this.processOptions(response);
                 }).catch(error => {
                     this.reportEnsoException(error);
                 }).then(() => {
                     this.element.selectpicker('refresh');
-
-                    if (!this.value || !this.element.val()) {
-                        this.clear();
-                    }
+                    this.update(this.value);
                 });
             },
             getParams() {
@@ -156,6 +152,10 @@
                     value: this.value
                 };
             },
+            processOptions(response) {
+                this.optionList = response.data.length === 0 && this.getQuery() ?
+                        [{ key: null, value: ''}] : response.data;
+            },
             addQueryListener() {
                 let self = this;
                 this.query.on('input', _.throttle(self.getOptionList, 200));
@@ -163,8 +163,11 @@
             getQuery() {
                 return this.query.val() || ''; //we don't want undefined
             },
+            update(value) {
+                this.element.selectpicker('val', value).trigger('changed.bs.select');
+            },
             clear() {
-                this.element.selectpicker('val', this.multiple ? [] : '').trigger('changed.bs.select');
+                this.update('');
             }
         },
 
