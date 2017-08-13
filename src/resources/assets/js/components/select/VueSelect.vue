@@ -182,9 +182,9 @@
 
     .vue-select > i.clear-button {
         z-index: 10;
+        float:right;
         position: absolute;
-        right: 45px;
-        bottom: 20px;
+        right: 50px;
         cursor: pointer;
     }
 
