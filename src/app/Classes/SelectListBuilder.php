@@ -13,10 +13,10 @@ class SelectListBuilder
 
     public function __construct($class, $selectAttributes, $displayAttribute, $query = null)
     {
-        $this->class            = $class;
+        $this->class = $class;
         $this->selectAttributes = $selectAttributes;
         $this->displayAttribute = $displayAttribute;
-        $this->query            = $query ?: $this->class::query();
+        $this->query = $query ?: $this->class::query();
         $this->run();
     }
 
@@ -69,8 +69,8 @@ class SelectListBuilder
 
     private function setSelected()
     {
-        $query          = clone $this->query;
-        $selected       = (array) request('value');
+        $query = clone $this->query;
+        $selected = (array) request('value');
         $this->selected = $query->whereIn('id', $selected)->get();
     }
 
@@ -78,7 +78,7 @@ class SelectListBuilder
     {
         $this->query->where(function ($query) {
             collect($this->selectAttributes)->each(function ($attribute) use ($query) {
-                $query->orWhere($attribute, 'like', '%' . request('query') . '%');
+                $query->orWhere($attribute, 'like', '%'.request('query').'%');
             });
         });
     }
