@@ -250,7 +250,6 @@
     div.vue-select input[type=text].multiselect__input {
         font-size: 14px;
         box-shadow: none;
-        width: auto;
         margin-bottom: 4px;
         padding: 1px;
     }
