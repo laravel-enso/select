@@ -13,16 +13,21 @@ class SelectListBuilder
 
     public function __construct($class, $selectAttributes, $displayAttribute, $query = null)
     {
-        $this->class = $class;
+        $this->class            = $class;
         $this->selectAttributes = $selectAttributes;
         $this->displayAttribute = $displayAttribute;
-        $this->query = $query ?: $this->class::query();
+        $this->query            = $query ?: $this->class::query();
         $this->run();
     }
 
     public function getOptionsList()
     {
-        return $this->result;
+        return $this->buildSelectList($this->result->pluck($this->displayAttribute, 'id'));
+    }
+
+    public function getOptionList()
+    {
+        return $this->result->pluck($this->displayAttribute, 'id');
     }
 
     private function run()
@@ -64,8 +69,8 @@ class SelectListBuilder
 
     private function setSelected()
     {
-        $query = clone $this->query;
-        $selected = (array) request('value');
+        $query          = clone $this->query;
+        $selected       = (array) request('value');
         $this->selected = $query->whereIn('id', $selected)->get();
     }
 
@@ -73,18 +78,21 @@ class SelectListBuilder
     {
         $this->query->where(function ($query) {
             collect($this->selectAttributes)->each(function ($attribute) use ($query) {
-                $query->orWhere($attribute, 'like', '%'.request('query').'%');
+                $query->orWhere($attribute, 'like', '%' . request('query') . '%');
             });
         });
     }
 
     private function setResult()
     {
-        $models = $this->query->limit(10)->get();
-
-        $this->result = $this->buildSelectList(
-            $models->merge($this->selected)->pluck($this->displayAttribute, 'id')
-        );
+        $this->result = $this->query->limit(10)->get()
+            ->merge($this->selected)
+            ->reduce(function ($collector, $model) {
+                return $collector->push(
+                    collect($model->toArray())
+                        ->only(['id', $this->displayAttribute])
+                );
+            }, collect());
     }
 
     public static function buildSelectList($data)
@@ -93,8 +101,8 @@ class SelectListBuilder
 
         foreach ($data as $key => $value) {
             $response->push([
-                'key'   => (string) $key,
-                'value' => $value,
+                'key'   => $key,
+                'label' => $value,
             ]);
         }
 

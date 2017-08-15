@@ -13,10 +13,25 @@ trait SelectListBuilder
         $displayAttribute = isset($this->displayAttribute) ? $this->displayAttribute : 'name';
         $selectQuery = isset($this->selectQuery) ? $this->selectQuery : null;
 
-        $selectListBuilder =
-            new ListBuilder($selectClass, $selectAttributes, $displayAttribute, $selectQuery);
+        $builder = new ListBuilder(
+            $selectClass, $selectAttributes, $displayAttribute, $selectQuery
+        );
 
-        return $selectListBuilder->getOptionsList();
+        return $builder->getOptionsList();
+    }
+
+    public function getOptionList()
+    {
+        $selectClass = isset($this->selectSourceClass) ? $this->selectSourceClass : null;
+        $selectAttributes = isset($this->selectAttributes) ? $this->selectAttributes : 'name';
+        $displayAttribute = isset($this->displayAttribute) ? $this->displayAttribute : 'name';
+        $selectQuery = isset($this->selectQuery) ? $this->selectQuery : null;
+
+        $builder = new ListBuilder(
+            $selectClass, $selectAttributes, $displayAttribute, $selectQuery
+        );
+
+        return $builder->getOptionList();
     }
 
     public function buildSelectList($data)

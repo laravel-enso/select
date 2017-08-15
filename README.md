@@ -33,7 +33,7 @@
 
 5. Use the `SelectListBuilder` trait in your desired Controller
 
-6. Define in routes/web.php a `getOptionsList` route for the desired Controller
+6. Define in routes/web.php a `getOptionList` route for the desired Controller
 
 6. Declare in your controller the `$selectSourceClass` variable as shown below:
 	`protected $selectSourceClass = Model::class`
@@ -59,15 +59,15 @@
 In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array.
 In conclusion the component requires one of the two options `route` or `options` presented below:
 
-- `source` - Only for server-side. The route suffix for your controller, getOptionsList will be added under the hood.
+- `source` - Only for server-side. The route suffix for your controller, getOptionList will be added under the hood.
 - `options` - Only where you don't need server-side. Options is an Object built with the 'buildSelectList' method from the 'SelectListBuilder' Trait.
 - `name` - the name of the input (optional)
 - `multiple` - multiple selectable options (optional). If ommited, the select acts as single select
 - `selected` - the selected option. Can be a single value or an Array is the select is used as a multi-select (optional)
 - `placeholder` - custom placeholder when no option in selected (optional)
 - `params` - list of parameters from the same table. format: params: { 'fieldName': 'fieldValue' } (optional)
-- `pivotParams` - list of parameters (ids) from pivot tables. format: pivotParams: { 'table': { id: value } } (optional)
-- `customParams` - anything. Using customParams implies that you rewrite the 'getOptionsList' method from the SelectListBuilder Trait. You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
+- `pivotParams` - list of pivot tables. format: pivotParams: { 'table': null } (optional)
+- `customParams` - anything. Using customParams implies that you rewrite the 'getOptionList' method from the SelectListBuilder Trait. You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
 
 ### Publishes
 

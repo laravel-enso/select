@@ -1,41 +1,57 @@
 <template>
 
-    <div :id="'bs-select-' + _uid"
+    <div :id="'vue-select-' + _uid"
         class="vue-select">
-        <i class="fa fa-times clear-button btn-box-tool"
-           @click="clear()"
-           v-if="clearButton">
-        </i>
-        <select v-selectpicker
+        <multiselect :value="value"
+            searchable allow-empty
             :multiple="multiple"
-            :id="'select-' + _uid"
-            :name="name"
-            :disabled="disabled"
-            :class="selectClass">
-            <option v-for="option in optionList"
-                :value="option.key"
-                v-html="option.value">
-            </option>
-        </select>
+            :clear-on-select="!multiple"
+            :close-on-select="!multiple"
+            :select-label="labels.select"
+            :deselect-label="labels.deselect"
+            :selected-label="labels.selected"
+            :placeholder="labels.placeholder"
+            :loading="loading"
+            :options-limit="100"
+            :options="optionKeys"
+            :custom-label="customLabel"
+            @search-change="query=$event;getOptions()"
+            @input="$emit('input', $event)">
+            <span slot="noResult">
+                {{ labels.noResult }}
+            </span>
+            <template slot="option" scope="props">
+                <span v-html="$options.filters.highlight(optionList[props.option], query)"></span>
+            </template>
+        </multiselect>
     </div>
 
 </template>
 
 <script>
 
+    import Multiselect from 'vue-multiselect';
+
     export default {
+        components: { Multiselect },
 
         props: {
-            name: {
-                type: String,
-                default: null
-            },
             value: {
                 default: null
             },
-            selectClass: {
+            source: {
                 type: String,
-                default: 'form-control'
+                default: null
+            },
+            options: {
+                type: Object,
+                default() {
+                    return {};
+                }
+            },
+            keyMap: {
+                type: String,
+                default: 'number'
             },
             disabled: {
                 type: Boolean,
@@ -44,16 +60,6 @@
             multiple: {
                 type: Boolean,
                 default: false
-            },
-            source: {
-                type: String,
-                default: null
-            },
-            options: {
-                type: Array,
-                default() {
-                    return [];
-                }
             },
             params: {
                 type: Object,
@@ -66,81 +72,106 @@
             customParams: {
                 type: Object,
                 default: null
+            },
+            labels: {
+                type: Object,
+                default() {
+                    return Store ? {
+                        placeholder: Store.labels.selectOption,
+                        selected: Store.labels.selected,
+                        select: Store.labels.select,
+                        deselect: Store.labels.deselect,
+                        noResult: Store.labels.noResult
+                    } : null;
+                }
             }
         },
 
         computed: {
-            clearButton() {
-                return !this.disabled && !this.multiple && this.value;
-            },
             isServerSide() {
                 return this.source !== null;
             },
-            element() {
-                return $('#select-' + this._uid);
+            optionKeys() {
+                return this.keyMap === 'number'
+                    ? Object.keys(this.optionList).map(Number)
+                    : Object.keys(this.optionList);
             },
-            query() {
-                return $('#bs-select-' + this._uid + ' input');
+            matchedValue() {
+                let self = this;
+
+                if (!this.multiple) {
+                    return this.optionKeys.filter(option => {
+                        return option === self.value;
+                    }).length > 0;
+                }
+
+                return this.optionKeys.filter(option => {
+                    return self.value.filter(val => {
+                        return val === option;
+                    }).length > 0;
+                }).length > 0;
             }
         },
 
-        directives: {
-            selectpicker: {
-                inserted(element, binding, vnode) {
-                    $(element).selectpicker({
-                        actionsBox: true,
-                        liveSearch: true,
-                        size: 5
-                    });
+        filters: {
+            highlight(option, query) {
+                query.split(' ').filter(word => {
+                    return word.length;
+                }).forEach(word => {
+                    option = option.replace(new RegExp('(' + word + ')', 'gi'), '<b>$1</b>')
+                });
 
-                    $(element).selectpicker('val', vnode.context.value);
-
-                    $(element).on('changed.bs.select', function() {
-                        vnode.context.$emit('input', $(element).val());
-                    });
-                },
-                unbind(element, binding, vnode) {
-                    $(element).off().selectpicker('destroy');
-                }
+                return option;
             }
         },
 
         watch: {
             params: {
                 handler() {
-                    this.getOptionList();
+                    this.getOptions();
                 },
                 deep: true
             },
             pivotParams: {
                 handler() {
-                    this.getOptionList();
+                    this.getOptions();
                 },
                 deep: true
             },
-            value: {
+            customParams: {
                 handler() {
-                    this.element.selectpicker('val', this.value);
-                    this.$emit('input', this.value);
-                }
-            }
+                    this.getOptions();
+                },
+                deep: true
+            },
         },
 
         data() {
             return {
                 optionList: this.options,
+                loading: false,
+                query: ""
             };
         },
 
+        created() {
+            this.$bus.$on('form-restored', this.update);
+        },
+
         methods: {
-            getOptionList() {
+            getOptions() {
+                if (!this.isServerSide) {
+                    return false;
+                }
+
+                this.loading = true;
+
                 axios.get(this.source, {params: this.getParams()}).then(response => {
                     this.processOptions(response);
+                    this.loading = false;
                 }).catch(error => {
+                    this.loading = true;
                     this.reportEnsoException(error);
-                }).then(() => {
-                    this.element.selectpicker('refresh');
-                    this.update(this.value);
                 });
             },
             getParams() {
@@ -148,52 +179,96 @@
                     params: this.params,
                     pivotParams: this.pivotParams,
                     customParams: this.customParams,
-                    query: this.getQuery(),
-                    value: this.value
+                    query: this.query
                 };
             },
             processOptions(response) {
-                this.optionList = response.data.length === 0 && this.getQuery() ?
-                        [{ key: null, value: ''}] : response.data;
-            },
-            addQueryListener() {
+                this.optionList = response.data;
                 let self = this;
-                this.query.on('input', _.throttle(self.getOptionList, 200));
+
+                if (!this.query && !this.matchedValue) {
+                    this.clear();
+                }
             },
-            getQuery() {
-                return this.query.val() || ''; //we don't want undefined
+            customLabel(option) {
+                return this.optionList[option];
             },
-            update(value) {
-                this.element.selectpicker('val', value).trigger('changed.bs.select');
+            update() {
+                this.$nextTick(() => {
+                    this.$emit('input', this.value);
+                });
             },
             clear() {
-                this.update('');
-            }
+                this.$emit('input', this.multiple ? [] : null);
+            },
         },
 
         mounted() {
             if (this.isServerSide) {
-                this.getOptionList();
-                this.addQueryListener();
+                this.getOptions();
             }
-        }
+        },
     }
 
 </script>
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
 <style>
 
-    .vue-select > i.clear-button {
-        z-index: 10;
-        float:right;
-        position: absolute;
-        right: 50px;
-        cursor: pointer;
+    div.vue-select .multiselect {
+        min-height: 33px;
     }
 
-    .bootstrap-select.btn-group .dropdown-menu {
-        width: 100%;
-        min-width: 0;
+    div.vue-select .multiselect__select {
+        height: 31px;
+    }
+
+    .form-group div.vue-select .multiselect__tags {
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    div.vue-select .multiselect__tags {
+        min-height: 32px;
+        padding: 4px 40px 0 4px;
+        border-radius: 3px;
+    }
+
+    div.vue-select .multiselect__tag {
+        border-radius: 3px;
+        margin-bottom: 4px;
+    }
+
+    div.vue-select .multiselect__tag-icon {
+        border-radius: 3px;
+        line-height: 21px;
+    }
+
+    div.vue-select input[type=text].multiselect__input {
+        font-size: 14px;
+        box-shadow: none;
+        width: auto;
+        margin-bottom: 4px;
+        padding: 1px;
+    }
+
+    div.vue-select .multiselect__content-wrapper {
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+
+    div.vue-select .multiselect__option,
+    div.vue-select .multiselect__option:after {
+        line-height: 14px;
+        padding: 10px;
+        min-height: 33px;
+
+    }
+
+    div.vue-select .multiselect__spinner {
+        height: 30px
     }
 
 </style>
