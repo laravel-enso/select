@@ -179,7 +179,8 @@
                     params: this.params,
                     pivotParams: this.pivotParams,
                     customParams: this.customParams,
-                    query: this.query
+                    query: this.query,
+                    value: this.value
                 };
             },
             processOptions(response) {
