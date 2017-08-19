@@ -4,6 +4,7 @@
         class="vue-select">
         <multiselect :value="value"
             searchable allow-empty
+            :disabled="disabled"
             :multiple="multiple"
             :clear-on-select="!multiple"
             :close-on-select="!multiple"
@@ -49,10 +50,6 @@
                     return {};
                 }
             },
-            keyMap: {
-                type: String,
-                default: 'number'
-            },
             disabled: {
                 type: Boolean,
                 default: false
@@ -92,9 +89,7 @@
                 return this.source !== null;
             },
             optionKeys() {
-                return this.keyMap === 'number'
-                    ? Object.keys(this.optionList).map(Number)
-                    : Object.keys(this.optionList);
+                return Object.keys(this.optionList);
             },
             matchedValue() {
                 let self = this;
