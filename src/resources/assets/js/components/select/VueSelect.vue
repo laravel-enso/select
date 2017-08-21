@@ -50,10 +50,6 @@
                     return {};
                 }
             },
-            keyMap: {
-                type: String,
-                default: 'number'
-            },
             disabled: {
                 type: Boolean,
                 default: false
@@ -93,10 +89,8 @@
                 return this.source !== null;
             },
             optionKeys() {
-                return this.keyMap === 'number'
-                   ? Object.keys(this.optionList).map(Number)
-                   : Object.keys(this.optionList);
-              },
+                return Object.keys(this.optionList);
+            },
             matchedValue() {
                 let self = this;
 
@@ -253,6 +247,7 @@
         box-shadow: none;
         margin-bottom: 4px;
         padding: 1px;
+        border-bottom: none;
     }
 
     div.vue-select .multiselect__content-wrapper {
