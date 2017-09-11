@@ -74,11 +74,15 @@
                 type: Object,
                 default: null
             },
+            placeholder: {
+                type: String,
+                default: null
+            },
             labels: {
                 type: Object,
                 default() {
                     return Store ? {
-                        placeholder: Store.labels.selectOption,
+                        placeholder: this.placeholder || Store.labels.placeholder,
                         selected: Store.labels.selected,
                         select: Store.labels.select,
                         deselect: Store.labels.deselect,
