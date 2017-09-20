@@ -41,7 +41,7 @@ class SelectListBuilder
 
     private function processParams()
     {
-        if (!request()->has('params')) {
+        if (!request()->filled('params')) {
             return false;
         }
 
@@ -54,7 +54,7 @@ class SelectListBuilder
 
     private function processPivotParams()
     {
-        if (!request()->has('pivotParams')) {
+        if (!request()->filled('pivotParams')) {
             return false;
         }
 
