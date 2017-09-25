@@ -20,11 +20,6 @@ class SelectListBuilder
         $this->run();
     }
 
-    public function getOptionsList()
-    {
-        return $this->buildSelectList($this->result->pluck($this->displayAttribute, 'id'));
-    }
-
     public function getOptionList()
     {
         return $this->result->pluck($this->displayAttribute, 'id');
@@ -41,7 +36,7 @@ class SelectListBuilder
 
     private function processParams()
     {
-        if (!request()->has('params')) {
+        if (!request()->filled('params')) {
             return false;
         }
 
@@ -54,7 +49,7 @@ class SelectListBuilder
 
     private function processPivotParams()
     {
-        if (!request()->has('pivotParams')) {
+        if (!request()->filled('pivotParams')) {
             return false;
         }
 
