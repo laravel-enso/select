@@ -86,8 +86,8 @@ class SelectListBuilder
     private function setResult()
     {
         $this->result = $this->selected->merge(
-            $this->query->orderBy($this->displayAttribute)
-                ->limit(6)->get()
+            $this->query->orderBy(collect($this->selectAttributes)->first())
+                ->limit(20)->get()
             )->reduce(function ($collector, $model) {
                 return $collector->push(
                     collect($model->toArray())
