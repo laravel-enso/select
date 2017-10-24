@@ -7,7 +7,7 @@
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 <!--/h-->
 
-[Bootstrap Select](https://silviomoreto.github.io/bootstrap-select/) data builder with server-side data fetching capability and a VueJS component
+[Vue-multiselect](https://github.com/monterail/vue-multiselect) data builder with server-side data fetching capability and a VueJS component
 
 [![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.webm)
 
@@ -15,15 +15,13 @@
 
 ### Features
 
-- VueJS select component, integrated with Bootstrap Select
+- VueJS select component, integrated with Vue-multiselect
 - permits getting the select options via ajax calls or given directly, as a parameter
 - when getting the data via ajax, it can take various parameters for results filtering
 - for the back-end, the packages comes with a trait for easy retrieval and formatting of data (in order to make it compatible with the component)
 - CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style
 
 ### Installation Steps
-
-1. Add `LaravelEnso\Select\SelectServiceProvider::class` to `config/app.php`
 
 2. Publish the VueJS components with `php artisan vendor:publish --tag=select-component`
 
@@ -79,7 +77,7 @@ In conclusion the component requires one of the two options `route` or `options`
 
 You cannot use model computed attributes to display attributes when using the serverside mode of the select.
 
-You can have the serverside route permissions generated automatically when creating permissions for a resource controller.
+You can have the server-side route permissions generated automatically when creating permissions for a resource controller.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
