@@ -9,7 +9,7 @@
 
 [Bootstrap Select](https://silviomoreto.github.io/bootstrap-select/) data builder with server-side data fetching capability and a VueJS component
 
-[![Watch the demo](https://laravel-enso.github.io/select/screenshots/Selection_031.png)](https://laravel-enso.github.io/select/videos/demo_01.webm)
+[![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.webm)
 
 <sup>click on the photo to view a short demo in compatible browsers</sup>
 
