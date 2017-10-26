@@ -15,7 +15,7 @@
 
 ### Features
 
-- VueJS select component, integrated with Bootstrap Select
+- VueJS select component, integrated with Vue-multiselect
 - permits getting the select options via ajax calls or given directly, as a parameter
 - when getting the data via ajax, it can take various parameters for results filtering
 - for the back-end, the packages comes with a trait for easy retrieval and formatting of data (in order to make it compatible with the component)
