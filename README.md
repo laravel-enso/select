@@ -7,7 +7,7 @@
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 <!--/h-->
 
-[Bootstrap Select](https://silviomoreto.github.io/bootstrap-select/) data builder with server-side data fetching capability and a VueJS component
+[Vue-multiselect](https://github.com/monterail/vue-multiselect) data builder with server-side data fetching capability and a VueJS component
 
 [![Watch the demo](https://laravel-enso.github.io/select/screenshots/Selection_031.png)](https://laravel-enso.github.io/select/videos/demo_01.webm)
 
@@ -79,7 +79,7 @@ In conclusion the component requires one of the two options `route` or `options`
 
 You cannot use model computed attributes to display attributes when using the serverside mode of the select.
 
-You can have the serverside route permissions generated automatically when creating permissions for a resource controller.
+You can have the server-side route permissions generated automatically when creating permissions for a resource controller.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 

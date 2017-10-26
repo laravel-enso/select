@@ -4,7 +4,7 @@
     "keywords": [
         "laravel-enso",
         "select",
-        "bootstrap-select",
+        "vue-multiselect",
         "select-server-side"
     ],
     "homepage": "https://github.com/laravel-enso/Select",
