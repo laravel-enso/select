@@ -16,34 +16,34 @@
 ### Features
 
 - VueJS select component, integrated with Vue-multiselect
-- permits getting the select options via ajax calls or given directly, as a parameter
+- permits getting the select options via ajax calls or takes them directly, as a parameter
 - when getting the data via ajax, it can take various parameters for results filtering
-- for the back-end, the packages comes with a trait for easy retrieval and formatting of data (in order to make it compatible with the component)
+- for the back-end, the packages comes with a trait for easy retrieval and formatting of the data 
+as expected by the VueJS component
 - CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style
 
 ### Installation Steps
 
-2. Publish the VueJS components with `php artisan vendor:publish --tag=select-component`
+1. The VueJS component is already included in the Enso install and should not require any additional installation steps
 
-3. Include the VueJS component in your `app.js`
+2. Use the `SelectListBuilder` trait in your desired Controller
 
-4. Run `gulp` / `npm run dev`
+3. Define a `getOptionList` route for the desired Controller (and permissions as required)
 
-5. Use the `SelectListBuilder` trait in your desired Controller
-
-6. Define in routes/web.php a `getOptionList` route for the desired Controller
-
-6. Declare in your controller the `$selectSourceClass` variable as shown below:
+4. Declare inside your controller the `$selectSourceClass` variable as shown below:
+	
 	`protected $selectSourceClass = Model::class`
-	where `Model::class` will be the Model from which the builder will extract the OptionsList.
+	
+	where `Model::class` will be the Model from which the builder will extract the list of options
+	
 	By default it will use the `name` field for the select list option label and the `id` for the key.
 	If you need another field from the model you can customize it by adding the `protected $selectAttribute = 'customAtrribute'` variable.
 
-6. In your blade add:
+5. In your page/component add:
 
     ```
-    <vue-select source="/routeToController"
-        :name="inputName"
+    <vue-select 
+        source="/routeToController"        
         :selected="selectedOption"
         :params="params"
         :pivot-params="pivotParams"
@@ -54,30 +54,37 @@
 
 ### Options
 
-In order to work the component needs a data source. The data source can be either an ajax for server-side, OR a formatted array.
-In conclusion the component requires one of the two options `route` or `options` presented below:
+In order to work the component needs a data source. The data source can be either an route for server-side, OR a formatted object.
+In conclusion the component requires one of the two options `source` or `options` presented below:
 
-- `source` - Only for server-side. The route suffix for your controller, getOptionList will be added under the hood.
-- `options` - Only where you don't need server-side. Options is an Object built with the 'buildSelectList' method from the 'SelectListBuilder' Trait.
-- `name` - the name of the input (optional)
-- `multiple` - multiple selectable options (optional). If ommited, the select acts as single select
-- `selected` - the selected option. Can be a single value or an Array is the select is used as a multi-select (optional)
-- `placeholder` - custom placeholder when no option in selected (optional)
-- `params` - list of parameters from the same table. format: params: { 'fieldName': 'fieldValue' } (optional)
-- `pivotParams` - list of pivot tables. format: pivotParams: { 'table': null } (optional)
-- `customParams` - anything. Using customParams implies that you rewrite the 'getOptionList' method from the SelectListBuilder Trait. You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
+- `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select (optional)
+- `source` - string, path to use when getting the select options **only for server-side**. 
+The route for your controller, as the `getOptionList` suffix will be added under the hood
+- `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted
+- `keyMap` - 'number'/'string', flag that makes handling truthy evaluations easier depending on the type of the keys | default 'number' | (optional)  
+- `disabled` - boolean, flag that sets the element as disabled | default false | (optional)
+- `multiple` - boolean, flag that makes the element work as a multiselect | if omitted, the select acts as single select | (optional)
+- `params` - object, attributes from the same table/model used for filtering results in server-side mode. 
+Format: params: { 'fieldName': 'fieldValue' } | default null | (optional)
+- `pivotParams` - object, attributes from linked tables/models used for filtering results in server-side mode. 
+Format: pivotParams: { 'table': {'attribute':value} } | default null | (optional)
+- `customParams` - object, can be anything. 
+Using customParams implies that you rewrite the 'getOptionList' method from the SelectListBuilder Trait. 
+You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
+- `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
+- `labels` - object, the labels used inside the component | default { selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' } | (optional)
+
+Note: `keyMap` might be deprecated in the future as it exists mostly because vue-multiselect doesn't handle zero (0) keys as expected.
 
 ### Publishes
 
- - `php artisan vendor:publish --tag=select-component` - publishes the VueJS component
- - `php artisan vendor:publish --tag=enso-update` - a common alias for when wanting to update the VueJS component,
- once a newer version is released
+Does not publish any files, as the VueJS component is bundled in the [VueComponents](https://github.com/laravel-enso/VueComponents) package
 
 ### Notes
 
-You cannot use model computed attributes to display attributes when using the serverside mode of the select.
+You cannot use model computed attributes to display attributes when using the server-side mode of the select.
 
-You can have the server-side route permissions generated automatically when creating permissions for a resource controller.
+You can have the server-side route permissions generated automatically when creating permissions for a resource controller, from the System/permissions menu.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
