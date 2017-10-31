@@ -54,6 +54,8 @@ as expected by the VueJS component
 
 ### Options
 
+#### VueSelect VueJS component options 
+
 In order to work the component needs a data source. The data source can be either an route for server-side, OR a formatted object.
 In conclusion the component requires one of the two options `source` or `options` presented below:
 
@@ -75,6 +77,15 @@ You must use the static::buildSelectList method in order to format the query res
 - `labels` - object, the labels used inside the component | default { selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' } | (optional)
 
 Note: `keyMap` might be deprecated in the future as it exists mostly because vue-multiselect doesn't handle zero (0) keys as expected.
+
+#### SelectListBuilder trait options
+
+- `$selectClass`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default null | required
+- `$selectAttributes`, string/array, the attribute / list of attributes we're searching in, when getting the select options | default 'name' | (optional) 
+- `$displayAttribute`, string, the attributes that we're going to be using for the label of each option | default 'name' | (optional)
+- `$selectQuery`, QueryBuilder, the query that we're using when querying for options | default null | (optional)
+
+Note: If a query is given, it's going to get used, if it's not given, a query will be constructed, using the given class and other values.
 
 ### Publishes
 
