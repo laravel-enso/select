@@ -6,20 +6,6 @@ use LaravelEnso\Select\app\Classes\SelectListBuilder as ListBuilder;
 
 trait SelectListBuilder
 {
-    public function getOptionsList()
-    {
-        $selectClass = isset($this->selectSourceClass) ? $this->selectSourceClass : null;
-        $selectAttributes = isset($this->selectAttributes) ? $this->selectAttributes : 'name';
-        $displayAttribute = isset($this->displayAttribute) ? $this->displayAttribute : 'name';
-        $selectQuery = isset($this->selectQuery) ? $this->selectQuery : null;
-
-        $builder = new ListBuilder(
-            $selectClass, $selectAttributes, $displayAttribute, $selectQuery
-        );
-
-        return $builder->getOptionsList();
-    }
-
     public function getOptionList()
     {
         $selectClass = isset($this->selectSourceClass) ? $this->selectSourceClass : null;
@@ -28,7 +14,10 @@ trait SelectListBuilder
         $selectQuery = isset($this->selectQuery) ? $this->selectQuery : null;
 
         $builder = new ListBuilder(
-            $selectClass, $selectAttributes, $displayAttribute, $selectQuery
+            $selectClass,
+            $selectAttributes,
+            $displayAttribute,
+            $selectQuery
         );
 
         return $builder->getOptionList();
