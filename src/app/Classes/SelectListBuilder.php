@@ -97,7 +97,7 @@ class SelectListBuilder
 
         foreach ($data as $key => $value) {
             $response->push([
-                'key'   => $key,
+                'key' => $key,
                 'label' => $value,
             ]);
         }
