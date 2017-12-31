@@ -17,11 +17,12 @@ class SelectListBuilder
         $this->selectAttributes = $selectAttributes;
         $this->displayAttribute = $displayAttribute;
         $this->query = $query ?: $this->class::query();
-        $this->run();
     }
 
     public function getOptionList()
     {
+        $this->run();
+
         return $this->result->pluck($this->displayAttribute, 'id');
     }
 
