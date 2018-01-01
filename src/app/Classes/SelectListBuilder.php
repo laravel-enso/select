@@ -91,18 +91,4 @@ class SelectListBuilder
                 );
             }, collect());
     }
-
-    public static function buildSelectList($data)
-    {
-        $response = collect();
-
-        foreach ($data as $key => $value) {
-            $response->push([
-                'key' => $key,
-                'label' => $value,
-            ]);
-        }
-
-        return $response;
-    }
 }
