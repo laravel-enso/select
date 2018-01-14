@@ -2,29 +2,19 @@
 
 namespace LaravelEnso\Select\app\Traits;
 
-use LaravelEnso\Select\app\Classes\SelectListBuilder as ListBuilder;
+use LaravelEnso\Select\app\Classes\SelectListBuilder as Builder;
 
 trait SelectListBuilder
 {
     public function getOptionList()
     {
-        $selectClass = $this->selectSourceClass ?? null;
+        $class = $this->selectSourceClass ?? null;
         $selectAttributes = $this->selectAttributes ?? 'name';
         $displayAttribute = $this->displayAttribute ?? 'name';
-        $selectQuery = $this->selectQuery ?? null;
+        $query = $this->selectQuery ?? null;
 
-        $builder = new ListBuilder(
-            $selectClass,
-            $selectAttributes,
-            $displayAttribute,
-            $selectQuery
-        );
+        $builder = new Builder($class, $selectAttributes, $displayAttribute, $query);
 
-        return $builder->getOptionList();
-    }
-
-    public function buildSelectList($data)
-    {
-        return ListBuilder::buildSelectList($data);
+        return $builder->data();
     }
 }

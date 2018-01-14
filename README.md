@@ -72,7 +72,6 @@ Format: params: { 'fieldName': 'fieldValue' } | default null | (optional)
 Format: pivotParams: { 'table': {'attribute':value} } | default null | (optional)
 - `customParams` - object, can be anything. 
 Using customParams implies that you rewrite the 'getOptionList' method from the SelectListBuilder Trait. 
-You must use the static::buildSelectList method in order to format the query result in the expected format. (optional)
 - `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
 - `labels` - object, the labels used inside the component | default { selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' } | (optional)
 
