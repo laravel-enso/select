@@ -26,13 +26,13 @@ as expected by the VueJS component
 
 1. The VueJS component is already included in the Enso install and should not require any additional installation steps
 
-2. Use the `SelectListBuilder` trait in your desired Controller
+2. Use the `OptionBuilder` trait in your desired Controller
 
-3. Define a `getOptionList` route for the desired Controller (and permissions as required)
+3. Define a `selectOptions` route for the desired Controller (and permissions as required)
 
-4. Declare inside your controller the `$selectSourceClass` variable as shown below:
+4. Declare inside your controller the `$class` property as shown below:
 	
-	`protected $selectSourceClass = Model::class`
+	`protected $class = Model::class`
 	
 	where `Model::class` will be the Model from which the builder will extract the list of options
 	
@@ -43,7 +43,7 @@ as expected by the VueJS component
 
     ```
     <vue-select 
-        source="/routeToController"        
+        source="/pathForSelectOptionsRoute"        
         :selected="selectedOption"
         :params="params"
         :pivot-params="pivotParams"
@@ -60,8 +60,7 @@ In order to work the component needs a data source. The data source can be eithe
 In conclusion the component requires one of the two options `source` or `options` presented below:
 
 - `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select (optional)
-- `source` - string, path to use when getting the select options **only for server-side**. 
-The route for your controller, as the `getOptionList` suffix will be added under the hood
+- `source` - string, route to use when getting the select options **only for server-side**. 
 - `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted
 - `keyMap` - 'number'/'string', flag that makes handling truthy evaluations easier depending on the type of the keys | default 'number' | (optional)  
 - `disabled` - boolean, flag that sets the element as disabled | default false | (optional)
@@ -71,20 +70,20 @@ Format: params: { 'fieldName': 'fieldValue' } | default null | (optional)
 - `pivotParams` - object, attributes from linked tables/models used for filtering results in server-side mode. 
 Format: pivotParams: { 'table': {'attribute':value} } | default null | (optional)
 - `customParams` - object, can be anything. 
-Using customParams implies that you rewrite the 'getOptionList' method from the SelectListBuilder Trait. 
+Using customParams implies that you rewrite the 'options' method from the OptionBuilder Trait. 
 - `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
 - `labels` - object, the labels used inside the component | default { selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' } | (optional)
 
 Note: `keyMap` might be deprecated in the future as it exists mostly because vue-multiselect doesn't handle zero (0) keys as expected.
 
-#### SelectListBuilder trait options
+#### OptionBuilder trait options
 
-- `$selectClass`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default null | required
-- `$selectAttributes`, string/array, the attribute / list of attributes we're searching in, when getting the select options | default 'name' | (optional) 
-- `$displayAttribute`, string, the attributes that we're going to be using for the label of each option | default 'name' | (optional)
-- `$selectQuery`, QueryBuilder, the query that we're using when querying for options | default null | (optional)
+- `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default null | required
+- `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default 'name' | (optional) 
+- `$label`, string, the attributes that we're going to be using for the label of each option | default 'name' | (optional)
+- `query()`, a method the will return the query builder that we're using when querying for options | default null | (optional)
 
-Note: If a query is given, it's going to get used, if it's not given, a query will be constructed, using the given class and other values.
+Note: If a query method is provided, it's going to get used, if it's not given, a query will be constructed, using the given class and other values.
 
 ### Publishes
 
