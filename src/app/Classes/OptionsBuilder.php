@@ -9,7 +9,6 @@ class OptionsBuilder
     private $queryAttributes;
     private $label;
     private $query;
-    private $selected;
     private $data;
 
     public function __construct(Builder $query, array $queryAttributes, string $label)
