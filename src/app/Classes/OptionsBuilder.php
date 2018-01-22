@@ -10,12 +10,15 @@ class OptionsBuilder
     private $label;
     private $query;
     private $data;
+    private $value;
+    private $selected;
 
-    public function __construct(Builder $query, array $queryAttributes, string $label)
+    public function __construct(Builder $query, array $queryAttributes, string $label, $value)
     {
         $this->queryAttributes = $queryAttributes;
         $this->label = $label;
         $this->query = $query;
+        $this->value = (array) $value;
     }
 
     public function data()
@@ -30,6 +33,7 @@ class OptionsBuilder
     {
         $this->setParams()
             ->setPivotParams()
+            ->setSelected()
             ->query()
             ->get();
     }
@@ -64,6 +68,15 @@ class OptionsBuilder
         return $this;
     }
 
+    private function setSelected()
+    {
+        $query = clone $this->query;
+
+        $this->selected = $query->whereIn('id', $this->value)->get();
+
+        return $this;
+    }
+
     private function query()
     {
         $this->query->where(function ($query) {
@@ -79,7 +92,7 @@ class OptionsBuilder
 
     private function get()
     {
-        $this->data = $this->query->get()
+        $this->data = $this->selected->merge($this->query->get())
             ->reduce(function ($collector, $model) {
                 return $collector->push(
                     collect($model->toArray())

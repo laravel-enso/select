@@ -13,7 +13,8 @@ trait OptionsBuilder
                 ? $this->query()
                 : $this->class::query(),
             $this->queryAttributes ?? ['name'],
-            $this->label ?? 'name'
+            $this->label ?? 'name',
+            request()->get('value')
         );
 
         return $builder->data();
