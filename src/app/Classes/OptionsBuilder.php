@@ -35,6 +35,7 @@ class OptionsBuilder
             ->setPivotParams()
             ->setSelected()
             ->query()
+            ->limit()
             ->get();
     }
 
@@ -84,8 +85,16 @@ class OptionsBuilder
                 $query->orWhere($attribute, 'like', '%'.request('query').'%');
             });
         })->whereIn('id', (array) request('value'), 'or')
-        ->orderBy(collect($this->queryAttributes)->first())
-        ->limit(10);
+        ->orderBy(collect($this->queryAttributes)->first());
+
+        return $this;
+    }
+
+    private function limit()
+    {
+        $limit = request()->get('limit') - count($this->value);
+
+        $this->query->limit($limit);
 
         return $this;
     }
