@@ -7,7 +7,7 @@
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 <!--/h-->
 
-[Vue-multiselect](https://github.com/monterail/vue-multiselect) data builder with server-side data fetching capability and a VueJS component
+Bulma Select based on [vue-multiselect](https://github.com/monterail/vue-multiselect) with a server side option list builder
 
 [![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.webm)
 
@@ -15,39 +15,41 @@
 
 ### Features
 
-- VueJS select component, integrated with Vue-multiselect
-- permits getting the select options via ajax calls or takes them directly, as a parameter
-- when getting the data via ajax, it can take various parameters for results filtering
-- for the back-end, the packages comes with a trait for easy retrieval and formatting of the data 
+- a VueJS wrapper component for [vue-multiselect](https://github.com/shentao/vue-multiselect)
+- CSS styling matches the beautiful [Bulma](https://bulma.io/) forms design
+- the select options can be retrieved via ajax calls or given directly, via a parameter
+- when getting the data via ajax, the component can take various parameters for results filtering
+- for the back-end, the package comes with a trait for easy retrieval and formatting of the data 
 as expected by the VueJS component
-- CSS styling is in line with the [Laravel Enso](https://github.com/laravel-enso/Enso) style
+- can filter the option list dynamically even based on the model’s one to many / many to many relationships
+- can search in multiple attributes of a model
+- can specify the attribute used as label for the select options
 
-### Installation Steps
+### Usage
 
-1. The VueJS component is already included in the Enso install and should not require any additional installation steps
+The VueJS component is already included in the Enso install and should not require any additional installation steps
 
-2. Use the `OptionBuilder` trait in your desired Controller
+1. Use the `OptionBuilder` trait in your desired Controller
 
-3. Define a `selectOptions` route for the desired Controller (and permissions as required)
+2. Define an `options` route for your Controller (and permissions as required)
 
-4. Declare inside your controller the `$class` property as shown below:
+3. Declare inside your controller the `$class` property as shown below:
 	
 	`protected $class = Model::class`
 	
-	where `Model::class` will be the Model from which the builder will extract the list of options
+	where `Model::class` will be the Model used by the builder to extract the list of options
 	
-	By default it will use the `name` field for the select list option label and the `id` for the key.
-	If you need another field from the model you can customize it by adding the `protected $selectAttribute = 'customAtrribute'` variable.
-
+	By default it will use the model’s `name` attribute as a label for the select option list - but this is customizable - and the `id` for the key. 
+	See the options bellow for details.
+	
 5. In your page/component add:
 
     ```
     <vue-select 
-        source="/pathForSelectOptionsRoute"        
+        source="/pathForSelectOptionsRoute" multiple        
         :selected="selectedOption"
         :params="params"
-        :pivot-params="pivotParams"
-        multiple
+        :pivot-params="pivotParams"        
         :custom-params="customParams">
     </vue-select>
     ```
@@ -56,31 +58,41 @@ as expected by the VueJS component
 
 #### VueSelect VueJS component options 
 
-In order to work the component needs a data source. The data source can be either an route for server-side, OR a formatted object.
-In conclusion the component requires one of the two options `source` or `options` presented below:
+In order to work, the component needs a data source. The data source can be a path for server-side, OR a formatted object. 
+Either a `source` or an `options` parameter is required.
 
-- `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select (optional)
-- `source` - string, route to use when getting the select options **only for server-side**. 
-- `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted
+- `source` - string, route to use when getting the select options **only for server-side**. | default `null`
+- `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted | default `{}`
+- `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select | default `null` |  (optional)
 - `keyMap` - 'number'/'string', flag that makes handling truthy evaluations easier depending on the type of the keys | default 'number' | (optional)  
 - `disabled` - boolean, flag that sets the element as disabled | default false | (optional)
-- `multiple` - boolean, flag that makes the element work as a multiselect | if omitted, the select acts as single select | (optional)
+- `multiple` - boolean, flag that makes the element work as a multiselect, if omitted, the select acts as single select | default `false` | (optional)
+- `taggable` - boolean, flag the allows the creation of new tags | default `false` | (optional)
+- `hasError` - boolean, flag sets an error styling for the select, like when validation fails | default `false` | (optional)
+- `optionsLimit` - number, parameter that limits the number of options loaded from the backend and is synchronized with multiselect's own limit | default `100` | (optional)
 - `params` - object, attributes from the same table/model used for filtering results in server-side mode. 
-Format: params: { 'fieldName': 'fieldValue' } | default null | (optional)
+Format: `params: { 'fieldName': 'fieldValue' }` | default `null` | (optional)
 - `pivotParams` - object, attributes from linked tables/models used for filtering results in server-side mode. 
-Format: pivotParams: { 'table': {'attribute':value} } | default null | (optional)
+Format: `pivotParams: { 'table': {'attribute':value} }` | default `null` | (optional)
 - `customParams` - object, can be anything. 
 Using customParams implies that you rewrite the 'options' method from the OptionBuilder Trait. 
 - `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
-- `labels` - object, the labels used inside the component | default { selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' } | (optional)
+- `labels` - object, the labels used inside the component | default `{ selected: 'Selected', select: 'Press enter to select', deselect: 'Press enter to deselect', noResult: 'No Elements Found' }` | (optional)
 
-Note: `keyMap` might be deprecated in the future as it exists mostly because vue-multiselect doesn't handle zero (0) keys as expected.
+
+#### VueSelectFilter component options 
+Takes the following parameters:	
+- `title` - string, the title to display above the options | default `null` | (optional)	
+- `value` -  the selected value from the list of options | default null | required	
+	
+Since this component is a wrapper for VueSelect, and all listeners and attributes are passed-through,	
+the regular VueSelect options are available
 
 #### OptionBuilder trait options
 
 - `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default null | required
-- `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default 'name' | (optional) 
-- `$label`, string, the attributes that we're going to be using for the label of each option | default 'name' | (optional)
+- `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default `['name']` | (optional) 
+- `$label`, string, the attribute that we're going to be using for the label of each option | default 'name' | (optional)
 - `query()`, a method the will return the query builder that we're using when querying for options | default null | (optional)
 
 Note: If a query method is provided, it's going to get used, if it's not given, a query will be constructed, using the given class and other values.
@@ -95,7 +107,7 @@ once a newer version is released, can be used with the `--force` flag
 
 You cannot use model computed attributes to display attributes when using the server-side mode of the select.
 
-You can have the server-side route permissions generated automatically when creating permissions for a resource controller, from the System/permissions menu.
+When using within [Laravel Enso](https://github.com/laravel-enso/enso), you can have the server-side route permissions generated automatically, when creating permissions for a resource controller, from the System/permissions menu.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
