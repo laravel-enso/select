@@ -30,6 +30,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "LaravelEnso\\Select\\AppServiceProvider"
             ],
             "aliases": {}
         }

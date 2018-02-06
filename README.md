@@ -87,7 +87,9 @@ Note: If a query method is provided, it's going to get used, if it's not given, 
 
 ### Publishes
 
-Does not publish any files, as the VueJS component is bundled in the [VueComponents](https://github.com/laravel-enso/VueComponents) package
+- `php artisan vendor:publish --tag=select-assets` - the main VueJS components and their dependencies
+- `php artisan vendor:publish --tag=enso-assets` - a common alias for when wanting to update the VueJS assets,
+once a newer version is released, can be used with the `--force` flag
 
 ### Notes
 
