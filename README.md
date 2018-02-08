@@ -17,11 +17,11 @@ Bulma Select based on [vue-multiselect](https://github.com/monterail/vue-multise
 
 - a VueJS wrapper component for [vue-multiselect](https://github.com/shentao/vue-multiselect)
 - CSS styling matches the beautiful [Bulma](https://bulma.io/) forms design
-- the select options can be retrieved via ajax calls or given directly, via a parameter
+- the select options can be retrieved via ajax calls or, given directly, via a parameter
 - when getting the data via ajax, the component can take various parameters for results filtering
 - for the back-end, the package comes with a trait for easy retrieval and formatting of the data 
 as expected by the VueJS component
-- can filter the option list dynamically even based on the model’s one to many / many to many relationships
+- can filter the option list dynamically even based on the model’s one-to-many / many-to-many relationships
 - can search in multiple attributes of a model
 - can specify the attribute used as label for the select options
 
@@ -65,13 +65,13 @@ Either a `source` or an `options` parameter is required.
 - `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted | default `{}`
 - `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select | default `null` |  (optional)
 - `keyMap` - 'number'/'string', flag that makes handling truthy evaluations easier depending on the type of the keys | default 'number' | (optional)  
-- `disabled` - boolean, flag that sets the element as disabled | default false | (optional)
+- `disabled` - boolean, flag that sets the element as disabled | default `false` | (optional)
 - `multiple` - boolean, flag that makes the element work as a multiselect, if omitted, the select acts as single select | default `false` | (optional)
 - `taggable` - boolean, flag the allows the creation of new tags | default `false` | (optional)
 - `hasError` - boolean, flag sets an error styling for the select, like when validation fails | default `false` | (optional)
 - `optionsLimit` - number, parameter that limits the number of options loaded from the backend and is synchronized with multiselect's own limit | default `100` | (optional)
 - `params` - object, attributes from the same table/model used for filtering results in server-side mode. 
-Format: `params: { 'fieldName': 'fieldValue' }` | default `null` | (optional)
+Format: `params: { 'fieldName': fieldValue }` | default `null` | (optional)
 - `pivotParams` - object, attributes from linked tables/models used for filtering results in server-side mode. 
 Format: `pivotParams: { 'table': {'attribute':value} }` | default `null` | (optional)
 - `customParams` - object, can be anything. 
@@ -85,17 +85,17 @@ Takes the following parameters:
 - `title` - string, the title to display above the options | default `null` | (optional)	
 - `value` -  the selected value from the list of options | default null | required	
 	
-Since this component is a wrapper for VueSelect, and all listeners and attributes are passed-through,	
-the regular VueSelect options are available
+Since this component is a wrapper for `VueSelect`, and all listeners and attributes are passed-through,	
+the regular `VueSelect` options are available
 
 #### OptionBuilder trait options
 
-- `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default null | required
+- `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default `null` | required
 - `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default `['name']` | (optional) 
-- `$label`, string, the attribute that we're going to be using for the label of each option | default 'name' | (optional)
-- `query()`, a method the will return the query builder that we're using when querying for options | default null | (optional)
+- `$label`, string, the attribute that we're going to be using for the label of each option | default `'name'` | (optional)
+- `query()`, a method the will return the query builder that we're using when querying for options | default `null` | (optional)
 
-Note: If a query method is provided, it's going to get used, if it's not given, a query will be constructed, using the given class and other values.
+Note: If a query method is provided, it's going to be used, if it's not given, a query will be constructed, using the given class and other values.
 
 ### Publishes
 
