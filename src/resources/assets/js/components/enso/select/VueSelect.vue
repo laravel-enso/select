@@ -275,6 +275,11 @@ export default {
                     margin-bottom: 4px;
                     margin-top: 2px;
                     border-bottom: none;
+                    font-size: 16px;
+                }
+
+                  .multiselect__single {
+                    font-size: 16px;
                 }
 
                 .multiselect__spinner {
