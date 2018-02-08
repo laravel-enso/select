@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OptionsBuilder
 {
-
     private $queryAttributes;
     private $label;
     private $query;
@@ -83,7 +82,7 @@ class OptionsBuilder
     {
         $this->query->where(function ($query) {
             collect($this->queryAttributes)->each(function ($attribute) use ($query) {
-                $query->orWhere($attribute, 'like', '%' . request('query') . '%');
+                $query->orWhere($attribute, 'like', '%'.request('query').'%');
             });
         })
             ->orderBy(collect($this->queryAttributes)->first());
