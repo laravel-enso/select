@@ -64,7 +64,6 @@ Either a `source` or an `options` parameter is required.
 - `source` - string, route to use when getting the select options **only for server-side**. | default `null`
 - `options` - object, list of options, **only where you don't need server-side**. Options must be properly formatted | default `{}`
 - `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select | default `null` |  (optional)
-- `keyMap` - 'number'/'string', flag that makes handling truthy evaluations easier depending on the type of the keys | default 'number' | (optional)  
 - `disabled` - boolean, flag that sets the element as disabled | default `false` | (optional)
 - `multiple` - boolean, flag that makes the element work as a multiselect, if omitted, the select acts as single select | default `false` | (optional)
 - `taggable` - boolean, flag the allows the creation of new tags | default `false` | (optional)

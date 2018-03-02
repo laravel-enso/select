@@ -38,7 +38,7 @@
                     </span>
                     <a class="delete is-small"
                         v-if="!loading && hasSelection"
-                        @click.prevent.stop="clear">
+                        @mousedown.prevent.self="clear">
                     </a>
                     <span class="icon is-small angle"
                         :aria-hidden="dropdown">
