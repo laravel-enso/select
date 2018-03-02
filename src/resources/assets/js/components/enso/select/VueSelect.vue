@@ -17,7 +17,10 @@
                         </tag>
                     </span>
                     <span v-if="!dropdown && !(multiple && hasSelection)">
-                        {{ hasSelection ? selected : (optionList.length > 0 ? placeholder : labels.noOptions) }}
+                        {{ hasSelection
+                            ? selected
+                            : (optionList.length > 0 ? placeholder : labels.noOptions)
+                        }}
                     </span>
                     <input class="input select-input" type="text"
                         v-focus
@@ -228,6 +231,11 @@ export default {
                 this.getData();
             },
             deep: true,
+        },
+        options: {
+            handler() {
+                this.optionList = this.options;
+            },
         },
     },
 
