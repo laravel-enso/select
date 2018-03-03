@@ -41,7 +41,7 @@ class OptionsBuilder
 
     private function setParams()
     {
-        if (!$this->request->filled('params')) {
+        if (!$this->request->has('params')) {
             return $this;
         }
 
@@ -55,13 +55,19 @@ class OptionsBuilder
 
     private function setPivotParams()
     {
-        if (!$this->request->filled('pivotParams')) {
+        if (!$this->request->has('pivotParams')) {
             return $this;
         }
 
         collect(json_decode($this->request->get('pivotParams')))
             ->each(function ($param, $table) {
                 $this->query = $this->query->whereHas($table, function ($query) use ($param) {
+                    if (is_array($param->id)) {
+                        $query->whereIn('id', $param->id);
+
+                        return;
+                    }
+
                     $query->whereId($param->id);
                 });
             });
