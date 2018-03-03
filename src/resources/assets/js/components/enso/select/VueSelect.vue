@@ -199,12 +199,13 @@ export default {
                 || (!this.multiple && this.value !== null);
         },
         selected() {
-            if (this.optionList.length === 0) {
-                return null;
-            }
             if (!this.multiple) {
-                return this.optionList.find(option =>
-                    option[this.trackBy] === this.value)[this.label];
+                const option = this.optionList.find(option =>
+                    option[this.trackBy] === this.value);
+
+                return option
+                    ? option[this.label]
+                    : null;
             }
 
             return this.optionList.filter(option =>
@@ -346,11 +347,14 @@ export default {
             this.scroll();
         },
         keyUp() {
-            if (this.position === 0 || this.position === null) {
+            if (this.position === 0) {
                 return;
             }
 
-            this.position--;
+            this.position = this.position !== null
+                ? --this.position
+                : null;
+
             this.scroll();
         },
         scroll() {
