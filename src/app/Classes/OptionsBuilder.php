@@ -93,7 +93,7 @@ class OptionsBuilder
     private function limit()
     {
         $value = (array) $this->request->get('value');
-        $limit = $this->request->get('limit') - count($value);
+        $limit = $this->request->get('optionsLimit') - count($value);
         $this->query->limit($limit);
 
         return $this;
