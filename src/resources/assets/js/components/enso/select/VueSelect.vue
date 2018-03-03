@@ -346,14 +346,11 @@ export default {
             this.scroll();
         },
         keyUp() {
-            if (this.position === 0) {
+            if (this.position === 0 || this.position === null) {
                 return;
             }
 
-            this.position = this.position !== null
-                ? --this.position
-                : null;
-
+            this.position--;
             this.scroll();
         },
         scroll() {
