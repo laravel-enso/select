@@ -25,7 +25,7 @@
                     <input class="input select-input" type="text"
                         v-focus
                         :placeholder="placeholder"
-                        v-model="query"
+                        :v-model="query"
                         @input="getData()"
                         v-if="dropdown"
                         @keydown.esc="hideDropdown"
@@ -199,13 +199,12 @@ export default {
                 || (!this.multiple && this.value !== null);
         },
         selected() {
+            if (this.optionList.length === 0) {
+                return null;
+            }
             if (!this.multiple) {
-                const option = this.optionList.find(option =>
-                    option[this.trackBy] === this.value);
-
-                return option
-                    ? option[this.label]
-                    : null;
+                return this.optionList.find(option =>
+                    option[this.trackBy] === this.value)[this.label];
             }
 
             return this.optionList.filter(option =>
@@ -252,7 +251,6 @@ export default {
             }
 
             this.loading = true;
-            this.position = null;
 
             axios.get(route(this.source, [], null), {
                 params: this.getParams(),
@@ -348,14 +346,11 @@ export default {
             this.scroll();
         },
         keyUp() {
-            if (this.loading || this.position === 0) {
+            if (this.loading || !this.position) {
                 return;
             }
 
-            this.position = this.position !== null
-                ? --this.position
-                : null;
-
+            this.position--;
             this.scroll();
         },
         scroll() {
