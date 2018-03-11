@@ -29,7 +29,7 @@ as expected by the VueJS component
 
 The VueJS component is already included in the Enso install and should not require any additional installation steps
 
-1. Use the `OptionBuilder` trait in your desired Controller
+1. Use the `OptionsBuilder` trait in your desired Controller
 
 2. Define an `options` route for your Controller (and permissions as required)
 
