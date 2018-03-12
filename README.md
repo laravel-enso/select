@@ -7,9 +7,9 @@
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 <!--/h-->
 
-Bulma Select based on [vue-multiselect](https://github.com/monterail/vue-multiselect) with a server side option list builder
+Bulma styled single and multi-select component with a server-side option list builder
 
-[![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.webm)
+[![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.mp4)
 
 <sup>click on the photo to view a short demo in compatible browsers</sup>
 
@@ -109,17 +109,18 @@ once a newer version is released, can be used with the `--force` flag
 
 ### Notes
 
-You cannot use model computed attributes to display attributes when using the server-side mode of the select.
-
-When using within [Laravel Enso](https://github.com/laravel-enso/enso), you can have the server-side route permissions generated automatically, when creating permissions for a resource controller, from the System/permissions menu.
-
-The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
-
 We've tried to make it as light as possible and use the minimum amount of external libraries and dependencies.
 Therefore, the package depends just on:
  - [v-click-outside](https://github.com/ndelvalle/v-click-outside) for detecting outside clicks 
  - [lodash](https://github.com/lodash/lodash) for debouncing using a selective imports
  - [Font Awesome 5](https://fontawesome.com/) for the icons, using selective imports
+
+
+You cannot use model computed attributes to display attributes when using the server-side mode of the select.
+
+When using within [Laravel Enso](https://github.com/laravel-enso/enso), you can have the server-side route permissions generated automatically, when creating permissions for a resource controller, from the System/permissions menu.
+
+The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
 <!--h-->
 ### Contributions
