@@ -335,7 +335,7 @@ export default {
                 : this.value !== null && this.value === option[this.trackBy];
         },
         keyDown() {
-            if (this.loading || this.position === this.optionList.length - 1) {
+            if (this.loading || this.position === this.filteredOptions.length - 1) {
                 return;
             }
 
