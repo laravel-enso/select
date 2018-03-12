@@ -7,7 +7,7 @@
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 <!--/h-->
 
-Bulma styled single and multi-select component with a server-side option list builder
+Bulma styled single and multi-select VueJS component with a server-side option list builder
 
 [![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.mp4)
 
@@ -16,7 +16,7 @@ Bulma styled single and multi-select component with a server-side option list bu
 ### Features
 
 - a standalone component with minimal dependencies
-- CSS styling that matches the beautiful [Bulma](https://bulma.io/) forms design
+- minimal CSS styling that matches the beautiful [Bulma](https://bulma.io/) forms design
 - the select options can be retrieved via ajax calls or, given directly, via a parameter
 - when getting the data via ajax, the component can take various parameters for results filtering
 - for the back-end, the package comes with a trait for easy retrieval and formatting of the data 
@@ -24,8 +24,8 @@ as expected by the VueJS component
 - can filter the option list dynamically even based on the model’s one-to-many / many-to-many relationships
 - can search in multiple attributes of a model
 - can specify the attribute used as label for the select options
-- can be used to create a new 'tag' if no suitable result is found
-- can use arrow keys to navigate the list of results
+- can be used to create a new 'tag' if no suitable result is found (soon)
+- can use the arrow keys to navigate the list of results and Enter to select/deselect 
 - is as small as can be, without skimping on features
 
 ### Usage
@@ -36,26 +36,31 @@ The VueJS component is already included in the Enso install and should not requi
 
 2. Define an `options` route for your Controller (and permissions as required)
 
-3. Declare inside your controller the `$class` property as shown below:
+3. Declare inside your controller the `$model` property as shown below:
 	
-	`protected $class = Model::class`
+	`protected $model = Model::class`
 	
 	where `Model::class` will be the Model used by the builder to extract the list of options
 	
+	You can use model computed attributes to display attributes when using the server-side mode, 
+    since the entire model is sent back to the front-end.
+	
 	By default, the VueJS component will use the model’s `name` attribute as a label for the select option list - but this is customizable - and the `id` for the key. 
-	See the options bellow for details.
+	See the options bellow for details. 
 	
 5. In your page/component add:
 
     ```
     <vue-select 
-        source="/pathForSelectOptionsRoute" multiple        
-        :selected="selectedOption"
+        v-model=myVariable
+        source="/pathForSelectOptionsRoute" multiple
         :params="params"
         :pivot-params="pivotParams"        
         :custom-params="customParams">
     </vue-select>
     ```
+
+
 
 ### Options
 
@@ -64,24 +69,31 @@ The VueJS component is already included in the Enso install and should not requi
 In order to work, the component needs a data source. The data source can be a path for server-side, OR a formatted object. 
 Either a `source` or an `options` parameter is required.
 
-- `source` - string, route to use when getting the select options **only for server-side**. | default `null`
-- `options` - array, list of options, **only where you don't need server-side** | default `[]`
+- `source` - string, path to use when getting the select options **only for server-side**. | default `null`
+- `options` - array of objects, list of options, **only where you don't need server-side** | default `[]`
 - `trackBy` - string, the name of the option object attribute when selecting it (html `<option>` value equivalent) | default `id` |  (optional)
 - `label` - string, the name of the option object attribute used as label (html `<option>` text equivalent) | default `name` |  (optional)
-- `value` - the selected option(s). Can be a single value or an Array if the select is used as a multi-select | default `[]` or `null` |  (optional)
+- `v-model` - variable holding the selected option(s). Can be a single value or an Array if the select is used as a multi-select. 
+If not null/empty, the vue select will pre-populate the selected value(s) | default `[]` or `null` |  (optional)
 - `disabled` - boolean, flag that sets the element as disabled | default `false` | (optional)
 - `multiple` - boolean, flag that makes the element work as a multiselect, if omitted, the select acts as single select | default `false` | (optional)
-- `taggable` - boolean, flag the allows the creation of new tags | default `false` | (optional)
+- `i18n`, optional, function, that is used for translating labels, headers, and table data 
+The default value (function) for this parameter simply returns its argument as the translated value
+- `taggable` - boolean, flag the allows the creation of new tags (soon) | default `false` | (optional)
 - `hasError` - boolean, flag sets an error styling for the select, like when validation fails | default `false` | (optional)
 - `optionsLimit` - number, parameter that limits the number of options loaded from the backend | default `100` | (optional)
 - `params` - object, attributes from the same table/model used for filtering results in server-side mode. 
 Format: `params: { 'fieldName': fieldValue }` | default `null` | (optional)
 - `pivotParams` - object, attributes from linked tables/models used for filtering results in server-side mode. 
 Format: `pivotParams: { 'table': {'attribute':value} }` | default `null` | (optional)
+
+    Note that the value may also be an array, in which case, unde the hood, a `where in` type of query will be used. 
+
 - `customParams` - object, can be anything. 
 Using customParams implies that you rewrite the 'options' method from the OptionBuilder Trait. | (optional)
 - `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
 - `labels` - object, the labels used inside the component | default `{ selected: 'selected', select: 'select', deselect: 'deselect', noOptions: 'No options available', noResult: 'No search results found' }` | (optional)
+- `debounce` - number, the number of miliseconds to use when debouncing the search on type | default `50` ms | (optional)
 
 
 #### VueSelectFilter component options 
@@ -94,9 +106,8 @@ the regular `VueSelect` options are available
 
 #### OptionBuilder trait options
 
-- `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default `['name']` | (optional) 
-- `$label`, string, the attribute that we're going to be using for the label of each option | default `'name'` | (optional)
-- `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default `null` | required
+- `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default `['name']` | (optional)
+- `$model`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default `null` | required
 - `query()`, a method the will return the query builder that we're using when querying for options | default `null` | (optional)
 
 Note: If a query method is provided, it's going to be used, if it's not given, a query will be constructed, using the given class and other values.
@@ -111,14 +122,16 @@ once a newer version is released, can be used with the `--force` flag
 
 We've tried to make it as light as possible and use the minimum amount of external libraries and dependencies.
 Therefore, the package depends just on:
- - [v-click-outside](https://github.com/ndelvalle/v-click-outside) for detecting outside clicks 
- - [lodash](https://github.com/lodash/lodash) for debouncing using a selective imports
+ - [v-click-outside](https://github.com/ndelvalle/v-click-outside) for closing the dropdown when clicking outside clicks 
+ - [lodash](https://github.com/lodash/lodash) for debouncing using a selective import
  - [Font Awesome 5](https://fontawesome.com/) for the icons, using selective imports
 
 
-You cannot use model computed attributes to display attributes when using the server-side mode of the select.
+When using within [Laravel Enso](https://github.com/laravel-enso/enso), 
+you can have the server-side route permissions generated automatically, 
+when creating permissions for a resource controller, from the System/permissions menu.
 
-When using within [Laravel Enso](https://github.com/laravel-enso/enso), you can have the server-side route permissions generated automatically, when creating permissions for a resource controller, from the System/permissions menu.
+You can also quickly generate permissions using the [StructureManager](https://github.com/laravel-enso/StructureManager)'s StructureMigration class.
 
 The [Laravel Enso Core](https://github.com/laravel-enso/Core) package comes with this package included.
 
