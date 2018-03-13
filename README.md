@@ -93,7 +93,7 @@ Format: `pivotParams: { 'table': {'attribute':value} }` | default `null` | (opti
 Using customParams implies that you rewrite the 'options' method from the OptionBuilder Trait. | (optional)
 - `placeholder` - custom placeholder when no option is selected | default 'Please choose' | (optional)
 - `labels` - object, the labels used inside the component | default `{ selected: 'selected', select: 'select', deselect: 'deselect', noOptions: 'No options available', noResult: 'No search results found' }` | (optional)
-- `debounce` - number, the number of miliseconds to use when debouncing the search on type | default `50` ms | (optional)
+- `debounce` - number, the number of miliseconds to use when debouncing the search on type | default `300` ms | (optional)
 
 
 #### VueSelectFilter component options 

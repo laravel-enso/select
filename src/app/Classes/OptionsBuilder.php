@@ -8,16 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 class OptionsBuilder
 {
     private $queryAttributes;
-    private $label;
     private $query;
     private $data;
     private $request;
     private $selected;
 
-    public function __construct(Builder $query, array $queryAttributes, string $label, Request $request)
+    public function __construct(Builder $query, array $queryAttributes, Request $request)
     {
         $this->queryAttributes = $queryAttributes;
-        $this->label = $label;
         $this->query = $query;
         $this->request = $request;
     }

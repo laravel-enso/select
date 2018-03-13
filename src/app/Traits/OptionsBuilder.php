@@ -11,9 +11,8 @@ trait OptionsBuilder
         $builder = new Builder(
             method_exists($this, 'query')
                 ? $this->query()
-                : $this->class::query(),
+                : $this->model::query(),
             $this->queryAttributes ?? ['name'],
-            $this->label ?? 'name',
             request()
         );
 
