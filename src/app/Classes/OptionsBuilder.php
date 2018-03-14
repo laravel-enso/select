@@ -32,7 +32,8 @@ class OptionsBuilder
         $this->setParams()
             ->setPivotParams()
             ->setSelected()
-            ->query()
+            ->search()
+            ->order()
             ->limit()
             ->get();
     }
@@ -45,7 +46,7 @@ class OptionsBuilder
 
         collect(json_decode($this->request->get('params')))
             ->each(function ($value, $column) {
-                $this->query->where($column, $value);
+                $this->query->whereIn($column, (array) $value);
             });
 
         return $this;
@@ -60,13 +61,7 @@ class OptionsBuilder
         collect(json_decode($this->request->get('pivotParams')))
             ->each(function ($param, $table) {
                 $this->query = $this->query->whereHas($table, function ($query) use ($param) {
-                    if (is_array($param->id)) {
-                        $query->whereIn('id', $param->id);
-
-                        return;
-                    }
-
-                    $query->whereId($param->id);
+                    $query->whereIn('id', (array) $param->id);
                 });
             });
 
@@ -82,14 +77,27 @@ class OptionsBuilder
         return $this;
     }
 
-    private function query()
+    private function search()
     {
+        if (!$this->request->filled('query')) {
+            return $this;
+        }
+
         $this->query->where(function ($query) {
-            collect($this->queryAttributes)->each(function ($attribute) use ($query) {
-                $query->orWhere($attribute, 'like', '%'.$this->request->get('query').'%');
-            });
-        })
-            ->orderBy(collect($this->queryAttributes)->first());
+            collect($this->queryAttributes)
+                ->each(function ($attribute) use ($query) {
+                    $query->orWhere($attribute, 'like', '%'.$this->request->get('query').'%');
+                });
+        });
+
+        return $this;
+    }
+
+    private function order()
+    {
+        $this->query
+            ->orderBy(collect($this->queryAttributes)
+            ->first());
 
         return $this;
     }
