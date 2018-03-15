@@ -92,6 +92,7 @@ the regular `VueSelect` options are available
 - `$class`, string, the fully qualified namespace of the class that we're querying on, in order to get the select options | default `null` | required
 - `$queryAttributes`, array with the list of attributes we're searching in, when getting the select options | default `['name']` | (optional) 
 - `$label`, string, the attribute that we're going to be using for the label of each option | default `'name'` | (optional)
+- `$appends`, array, list of appended attributes that need to be added to the query results. Note that the appended attributes are available from the main query model | default `[]` | (optional)
 - `query()`, a method the will return the query builder that we're using when querying for options | default `null` | (optional)
 
 Note: If a query method is provided, it's going to be used, if it's not given, a query will be constructed, using the given class and other values.

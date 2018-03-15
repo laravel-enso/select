@@ -13,13 +13,16 @@ class OptionsBuilder
     private $data;
     private $request;
     private $selected;
+    private $appends;
 
-    public function __construct(Builder $query, array $queryAttributes, string $label, Request $request)
+    public function __construct(Builder $query, array $queryAttributes, string $label, Request $request, 
+        array $appends = [])
     {
         $this->queryAttributes = $queryAttributes;
         $this->label = $label;
         $this->query = $query;
         $this->request = $request;
+        $this->appends = $appends;
     }
 
     public function data()
@@ -36,7 +39,8 @@ class OptionsBuilder
             ->setSelected()
             ->query()
             ->limit()
-            ->get();
+            ->get()
+            ->setAppends();
     }
 
     private function setParams()
@@ -108,5 +112,18 @@ class OptionsBuilder
     private function get()
     {
         $this->data = $this->selected->merge($this->query->get());
+
+        return $this;
+    }
+
+    private function setAppends()
+    {
+        if (!$this->appends) {
+            return $this;
+        }
+
+        $this->data->each->setAppends($this->appends);
+
+        return $this;
     }
 }
