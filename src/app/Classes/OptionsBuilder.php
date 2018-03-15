@@ -15,7 +15,7 @@ class OptionsBuilder
     private $selected;
     private $appends;
 
-    public function __construct(Builder $query, array $queryAttributes, string $label, Request $request, 
+    public function __construct(Builder $query, array $queryAttributes, string $label, Request $request,
         array $appends = [])
     {
         $this->queryAttributes = $queryAttributes;
