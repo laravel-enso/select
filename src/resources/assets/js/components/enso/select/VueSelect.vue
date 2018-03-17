@@ -13,7 +13,7 @@
                         <tag v-for="(option, index) in selected"
                             :label="option[label]"
                             :key="index"
-                            @remove="remove(option)">
+                            @remove="remove(option[trackBy])">
                         </tag>
                     </span>
                     <span v-if="!dropdown && !(multiple && hasSelection)">
@@ -339,9 +339,9 @@ export default {
         highlight(label) {
             return label.replace(new RegExp(`(${this.query})`, 'gi'), '<b>$1</b>');
         },
-        remove(option) {
+        remove(value) {
             const index = this.value
-                .findIndex(item => item[this.trackBy] === option[this.trackBy]);
+                .findIndex(val => val === value);
             this.value.splice(index, 1);
         },
         isSelected(option) {
