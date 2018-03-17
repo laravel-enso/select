@@ -324,12 +324,14 @@ export default {
 
             const newValue = this.value;
             const index = newValue.findIndex(option => option === value);
+
             if (index >= 0) {
                 newValue.splice(index, 1);
             } else {
                 newValue.push(value);
             }
 
+            this.query = '';
             this.$el.querySelector('input').focus();
             this.$emit('input', newValue);
         },
