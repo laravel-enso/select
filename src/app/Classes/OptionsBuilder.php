@@ -12,12 +12,14 @@ class OptionsBuilder
     private $data;
     private $request;
     private $selected;
+    private $trackBy;
 
-    public function __construct(Builder $query, array $queryAttributes, Request $request)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes, Request $request)
     {
         $this->queryAttributes = $queryAttributes;
         $this->query = $query;
         $this->request = $request;
+        $this->trackBy = $trackBy;
     }
 
     public function data()
@@ -72,7 +74,7 @@ class OptionsBuilder
     {
         $query = clone $this->query;
         $value = (array) $this->request->get('value');
-        $this->selected = $query->whereIn('id', $value)->get();
+        $this->selected = $query->whereIn($this->trackBy, $value)->get();
 
         return $this;
     }
