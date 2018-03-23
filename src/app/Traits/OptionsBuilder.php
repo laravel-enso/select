@@ -12,6 +12,7 @@ trait OptionsBuilder
             method_exists($this, 'query')
                 ? $this->query()
                 : $this->model::query(),
+            $this->trackBy ?? 'id',
             $this->queryAttributes ?? ['name'],
             request()
         );
