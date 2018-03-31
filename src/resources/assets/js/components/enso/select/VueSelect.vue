@@ -189,6 +189,7 @@ export default {
             query: '',
             dropdown: false,
             position: null,
+            route: null,
         };
     },
 
@@ -249,6 +250,9 @@ export default {
     },
 
     created() {
+        this.route = typeof route === 'function'
+            ? route(this.source)
+            : this.source;
         this.getData = debounce(this.getData, this.debounce);
         this.getData();
     },
@@ -261,15 +265,11 @@ export default {
 
             this.loading = true;
 
-            axios.get(route(this.source, [], null), {
-                params: this.getParams(),
-            }).then((response) => {
-                this.processOptions(response);
-                this.loading = false;
-            }).catch((error) => {
-                this.loading = false;
-                this.handleError(error);
-            });
+            axios.get(this.route, { params: this.getParams() })
+                .then((response) => {
+                    this.processOptions(response);
+                    this.loading = false;
+                }).catch(error => this.handleError(error));
         },
         getParams() {
             return {
