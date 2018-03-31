@@ -250,14 +250,21 @@ export default {
     },
 
     created() {
-        this.route = typeof route === 'function'
-            ? route(this.source)
-            : this.source;
+        this.setRoute();
         this.getData = debounce(this.getData, this.debounce);
         this.getData();
     },
 
     methods: {
+        setRoute() {
+            if (!this.isServerSide) {
+                return;
+            }
+
+            this.route = typeof route === 'function'
+                ? route(this.source)
+                : this.source;
+        },
         getData() {
             if (!this.isServerSide) {
                 return;
