@@ -24,7 +24,7 @@
                     </span>
                     <input class="input select-input" type="text"
                         v-focus
-                        :placeholder="placeholder"
+                        :placeholder="i18n(placeholder)"
                         v-model="query"
                         @input="getData()"
                         v-if="dropdown"
