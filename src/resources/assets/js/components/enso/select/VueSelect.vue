@@ -1,11 +1,11 @@
 <template>
 
     <div :class="['dropdown', { 'is-active': dropdown }]"
-        :disabled="disabled"
         v-click-outside="hideDropdown">
         <div :class="['dropdown-trigger', { 'is-danger': hasError }]">
             <div class="button"
                 tabindex="0"
+                :disabled="disabled"
                 @click="showDropdown"
                 @focus="showDropdown">
                 <div class="select-value">
@@ -37,7 +37,7 @@
                         v-if="loading">
                     </span>
                     <a class="delete is-small"
-                        v-if="!loading && hasSelection"
+                        v-if="!loading && hasSelection && !disabled"
                         @mousedown.prevent.self="clear">
                     </a>
                     <span class="icon is-small angle"
@@ -306,7 +306,7 @@ export default {
                     .filter(val => val === option[this.trackBy]).length > 0).length > 0;
         },
         showDropdown() {
-            if (this.optionList.length === 0) {
+            if (this.optionList.length === 0 || this.disabled) {
                 return;
             }
 
