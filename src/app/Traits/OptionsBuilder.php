@@ -8,15 +8,13 @@ trait OptionsBuilder
 {
     public function options()
     {
-        $builder = new Builder(
+        return new Builder(
             method_exists($this, 'query')
                 ? $this->query()
                 : $this->model::query(),
             $this->trackBy ?? 'id',
             $this->queryAttributes ?? ['name'],
-            request()
+            request()->all()
         );
-
-        return $builder->data();
     }
 }

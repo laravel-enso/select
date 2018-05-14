@@ -2,10 +2,11 @@
 
 namespace LaravelEnso\Select\app\Classes;
 
-use Illuminate\Http\Request;
+use LaravelEnso\Helpers\app\Classes\Obj;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Responsable;
 
-class OptionsBuilder
+class OptionsBuilder implements Responsable
 {
     private $queryAttributes;
     private $query;
@@ -13,16 +14,20 @@ class OptionsBuilder
     private $request;
     private $selected;
     private $trackBy;
+    private $value;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes, Request $request)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes, array $request)
     {
         $this->queryAttributes = $queryAttributes;
         $this->query = $query;
-        $this->request = $request;
+        $this->request = new Obj($request);
         $this->trackBy = $trackBy;
+        $this->value = $this->request->has('value')
+            ? (array) $this->request->get('value')
+            : [];
     }
 
-    public function data()
+    public function toResponse($request)
     {
         $this->run();
 
@@ -62,7 +67,7 @@ class OptionsBuilder
 
         collect(json_decode($this->request->get('pivotParams')))
             ->each(function ($param, $table) {
-                $this->query = $this->query->whereHas($table, function ($query) use ($param) {
+                $this->query->whereHas($table, function ($query) use ($param) {
                     $query->whereIn('id', (array) $param->id);
                 });
             });
@@ -73,8 +78,8 @@ class OptionsBuilder
     private function setSelected()
     {
         $query = clone $this->query;
-        $value = (array) $this->request->get('value');
-        $this->selected = $query->whereIn($this->trackBy, $value)->get();
+
+        $this->selected = $query->whereIn($this->trackBy, $this->value)->get();
 
         return $this;
     }
@@ -106,8 +111,7 @@ class OptionsBuilder
 
     private function limit()
     {
-        $value = (array) $this->request->get('value');
-        $limit = $this->request->get('optionsLimit') - count($value);
+        $limit = $this->request->get('optionsLimit') - count($this->value);
         $this->query->limit($limit);
 
         return $this;
@@ -115,6 +119,7 @@ class OptionsBuilder
 
     private function get()
     {
-        $this->data = $this->selected->merge($this->query->get());
+        $this->data = $this->selected
+            ->merge($this->query->get());
     }
 }
