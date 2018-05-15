@@ -16,19 +16,17 @@ class OptionsBuilder implements Responsable
     private $trackBy;
     private $value;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes, array $request)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes)
     {
         $this->queryAttributes = $queryAttributes;
         $this->query = $query;
-        $this->request = new Obj($request);
         $this->trackBy = $trackBy;
-        $this->value = $this->request->has('value')
-            ? (array) $this->request->get('value')
-            : [];
     }
 
     public function toResponse($request)
     {
+        $this->request = $request;
+
         $this->run();
 
         return $this->data;
@@ -36,13 +34,23 @@ class OptionsBuilder implements Responsable
 
     private function run()
     {
-        $this->setParams()
+        $this->setValue()
+            ->setParams()
             ->setPivotParams()
             ->setSelected()
             ->search()
             ->order()
             ->limit()
             ->get();
+    }
+
+    private function setValue()
+    {
+        $this->value = $this->request->has('value')
+            ? (array) $this->request->get('value')
+            : [];
+
+        return $this;
     }
 
     private function setParams()

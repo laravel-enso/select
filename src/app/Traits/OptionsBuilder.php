@@ -13,8 +13,7 @@ trait OptionsBuilder
                 ? $this->query()
                 : $this->model::query(),
             $this->trackBy ?? 'id',
-            $this->queryAttributes ?? ['name'],
-            request()->all()
+            $this->queryAttributes ?? ['name']
         );
     }
 }
