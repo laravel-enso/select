@@ -2,7 +2,6 @@
 
 namespace LaravelEnso\Select\app\Classes;
 
-use LaravelEnso\Helpers\app\Classes\Obj;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Responsable;
 
