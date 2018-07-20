@@ -22,19 +22,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .tag {
-        padding: 0.5em;
-        height: 1.4em;
-        font-size: 1em;
-        margin: 0.05em 0.1em 0.05em;
-
-        &:not(body).is-delete {
-            width: 1.4em;
-            margin-right: 0.2em;
+    .tags {
+        &:last-child {
+            margin-bottom: 0;
         }
 
-        &:last {
-            margin-right:auto;
+        .tag {
+            padding: 0.5em;
+            height: 1.4em;
+            font-size: 1em;
+            margin: 0.05em 0.1em 0.05em;
+
+            &:not(body).is-delete {
+                width: 1.4em;
+                margin-right: 0.2em;
+            }
         }
     }
+
 </style>
