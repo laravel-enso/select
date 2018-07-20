@@ -1,8 +1,8 @@
 <template>
     <div class="tags has-addons">
-        <a class="tag is-link">
+        <span class="tag is-link">
             {{ label }}
-        </a>
+        </span>
         <a class="tag is-delete"
             @click="$emit('remove')"/>
     </div>
