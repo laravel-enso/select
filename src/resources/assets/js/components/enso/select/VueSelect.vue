@@ -16,7 +16,7 @@
                                 :disabled="disabled"
                                 :label="option[label]"
                                 :key="index"
-                                @remove="remove(option[trackBy]); $emit('remove', option)"/>
+                                @remove="remove(option);"/>
                         </div>
                     </div>
                     <span v-if="!dropdown && !(multiple && hasSelection)">
@@ -366,10 +366,12 @@ export default {
         highlight(label) {
             return label.replace(new RegExp(`(${this.query})`, 'gi'), '<b>$1</b>');
         },
-        remove(value) {
+        remove(option) {
             const index = this.value
-                .findIndex(val => val === value);
+                .findIndex(val => val === option[this.trackBy]);
             this.value.splice(index, 1);
+            this.$emit('remove', option);
+            this.$emit('input', this.value);
         },
         isSelected(option) {
             return this.multiple
