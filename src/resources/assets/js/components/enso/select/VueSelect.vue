@@ -9,15 +9,25 @@
                 @click="showDropdown"
                 @focus="showDropdown">
                 <div class="select-value">
-                    <div class="field is-grouped is-grouped-multiline"
-                        v-if="multiple">
-                        <div class="control">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control"
+                            v-if="multiple">
                             <tag v-for="(option, index) in selected"
                                 :disabled="disabled"
                                 :label="option[label]"
                                 :key="index"
-                                @remove="remove(option);"/>
+                                @remove="remove(option[trackBy]); $emit('remove', option)"/>
                         </div>
+                        <input class="input select-input" type="text"
+                            v-focus
+                            :placeholder="i18n(placeholder)"
+                            v-model="query"
+                            @keydown.esc="hideDropdown"
+                            @keydown.down="keyDown"
+                            @keydown.up="keyUp"
+                            @keydown.tab="hideDropdown"
+                            @keydown.enter.prevent="hit()"
+                            v-if="dropdown">
                     </div>
                     <span v-if="!dropdown && !(multiple && hasSelection)">
                         {{ hasSelection
@@ -25,16 +35,6 @@
                             : (optionList.length > 0 ? i18n(placeholder) : i18n(labels.noOptions))
                         }}
                     </span>
-                    <input class="input select-input" type="text"
-                        v-focus
-                        :placeholder="i18n(placeholder)"
-                        v-model="query"
-                        v-if="dropdown"
-                        @keydown.esc="hideDropdown"
-                        @keydown.down="keyDown"
-                        @keydown.up="keyUp"
-                        @keydown.tab="hideDropdown"
-                        @keydown.enter.prevent="hit()">
                     <span class="is-loading"
                         v-if="loading"/>
                     <a class="delete is-small"
@@ -366,12 +366,10 @@ export default {
         highlight(label) {
             return label.replace(new RegExp(`(${this.query})`, 'gi'), '<b>$1</b>');
         },
-        remove(option) {
+        remove(value) {
             const index = this.value
-                .findIndex(val => val === option[this.trackBy]);
+                .findIndex(val => val === value);
             this.value.splice(index, 1);
-            this.$emit('remove', option);
-            this.$emit('input', this.value);
         },
         isSelected(option) {
             return this.multiple

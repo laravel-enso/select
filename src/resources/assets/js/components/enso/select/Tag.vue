@@ -32,8 +32,8 @@ export default {
             margin-bottom: 0;
         }
 
-        &:not(:first-child) {
-            margin-left: 0.3em;
+        &:not(:last-child) {
+            margin-right: 0.3em;
         }
 
         .tag {
