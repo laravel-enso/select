@@ -469,6 +469,15 @@ export default {
                     text-align: left;
 
                     .field.is-grouped.is-grouped-multiline {
+                        .select-input {
+                            border: 0;
+                            height: 1.4em;
+                            margin-top: 0.05em;
+                            box-shadow: unset;
+                            -webkit-box-shadow: unset;
+                            width: fit-content;
+                        }
+
                         .control:last-child,
                         .control:not(:last-child) {
                             margin-bottom: 0;
@@ -478,16 +487,6 @@ export default {
                                 margin-bottom: 0;
                             }
                         }
-                    }
-
-                    .select-input {
-                        border: 0;
-                        height: 1.5em;
-                        box-shadow: unset;
-                        -webkit-box-shadow: unset;
-                        width: fit-content;
-                        padding: unset;
-                        margin-left: 0.2em;
                     }
 
                     .angle {

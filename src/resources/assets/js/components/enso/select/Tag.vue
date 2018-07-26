@@ -28,12 +28,10 @@ export default {
 
 <style lang="scss" scoped>
     .tags {
+        margin-right: 0.3em;
+
         &:last-child {
             margin-bottom: 0;
-        }
-
-        &:not(:last-child) {
-            margin-right: 0.3em;
         }
 
         .tag {
