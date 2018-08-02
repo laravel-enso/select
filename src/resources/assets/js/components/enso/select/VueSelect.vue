@@ -86,12 +86,12 @@
 
 import debounce from 'lodash/debounce';
 import vClickOutside from 'v-click-outside';
-import fontawesome from '@fortawesome/fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faAngleUp }
-    from '@fortawesome/fontawesome-free-solid/shakable.es';
+    from '@fortawesome/free-solid-svg-icons';
 import Tag from './Tag.vue';
 
-fontawesome.library.add([faCheck, faAngleUp]);
+library.add([faCheck, faAngleUp]);
 
 export default {
     name: 'VueSelect',
