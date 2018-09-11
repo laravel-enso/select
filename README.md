@@ -5,7 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/laravel-enso/select/downloads)](https://packagist.org/packages/laravel-enso/select)
 [![Latest Stable Version](https://poser.pugx.org/laravel-enso/select/version)](https://packagist.org/packages/laravel-enso/select)
 
-Bulma styled single and multi-select VueJS component with a server-side option list builder
+Bulma styled single and multi-select VueJS component with a server-side option list builder. [Read Docs](https://docs.laravel-enso.com/packages/select.html)
 
 [![Watch the demo](https://laravel-enso.github.io/select/screenshots/bulma_031.png)](https://laravel-enso.github.io/select/videos/bulma_demo_01.mp4)
 
