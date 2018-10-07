@@ -2,11 +2,14 @@
 
 namespace LaravelEnso\Select\app\Classes;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Responsable;
 
 class OptionsBuilder implements Responsable
 {
+    private const Limit = 100;
+
     private $queryAttributes;
     private $query;
     private $data;
@@ -100,25 +103,52 @@ class OptionsBuilder implements Responsable
         $this->query->where(function ($query) {
             collect($this->queryAttributes)
                 ->each(function ($attribute) use ($query) {
-                    $query->orWhere($attribute, 'like', '%'.$this->request->get('query').'%');
+                    $this->isNested($attribute)
+                        ? $this->where($query, $attribute)
+                        : $query->orWhere(
+                            $attribute,
+                            'like',
+                            '%'.$this->request->get('query').'%'
+                        );
                 });
         });
 
         return $this;
     }
 
+    private function where($query, $attribute)
+    {
+        if (Str::contains($attribute, '.')) {
+            $attributes = collect(explode('.', $attribute));
+            $query->orWhere(function ($query) use ($attributes) {
+                $query->whereHas($attributes->shift(), function ($query) use ($attributes) {
+                    $this->where($query, $attributes->implode('.'));
+                });
+            });
+
+            return;
+        }
+
+        $query->where($attribute, 'like', '%'.$this->request->get('query').'%');
+    }
+
     private function order()
     {
-        $this->query
-            ->orderBy(collect($this->queryAttributes)
-            ->first());
+        $attribute = collect($this->queryAttributes)->first();
+
+        if (!$this->isNested($attribute)) {
+            $this->query->orderBy($attribute);
+        }
 
         return $this;
     }
 
     private function limit()
     {
-        $limit = $this->request->get('optionsLimit') - count($this->value);
+        $limit = $this->request->get('limit')
+            ?? self::Limit
+            - count($this->value);
+
         $this->query->limit($limit);
 
         return $this;
@@ -128,5 +158,10 @@ class OptionsBuilder implements Responsable
     {
         $this->data = $this->selected
             ->merge($this->query->get());
+    }
+
+    private function isNested($attribute)
+    {
+        return Str::contains($attribute, '.');
     }
 }
