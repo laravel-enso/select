@@ -57,7 +57,7 @@ class OptionsBuilder implements Responsable
 
     private function setParams()
     {
-        if (!$this->request->has('params')) {
+        if (! $this->request->has('params')) {
             return $this;
         }
 
@@ -71,7 +71,7 @@ class OptionsBuilder implements Responsable
 
     private function setPivotParams()
     {
-        if (!$this->request->has('pivotParams')) {
+        if (! $this->request->has('pivotParams')) {
             return $this;
         }
 
@@ -96,7 +96,7 @@ class OptionsBuilder implements Responsable
 
     private function search()
     {
-        if (!$this->request->filled('query')) {
+        if (! $this->request->filled('query')) {
             return $this;
         }
 
@@ -136,7 +136,7 @@ class OptionsBuilder implements Responsable
     {
         $attribute = collect($this->queryAttributes)->first();
 
-        if (!$this->isNested($attribute)) {
+        if (! $this->isNested($attribute)) {
             $this->query->orderBy($attribute);
         }
 
