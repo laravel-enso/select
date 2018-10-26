@@ -106,9 +106,7 @@ class OptionsBuilder implements Responsable
                     $this->isNested($attribute)
                         ? $this->where($query, $attribute)
                         : $query->orWhere(
-                            $attribute,
-                            'like',
-                            '%'.$this->request->get('query').'%'
+                            $attribute, 'like', '%'.$this->request->get('query').'%'
                         );
                 });
         });
@@ -118,18 +116,19 @@ class OptionsBuilder implements Responsable
 
     private function where($query, $attribute)
     {
-        if (Str::contains($attribute, '.')) {
-            $attributes = collect(explode('.', $attribute));
-            $query->orWhere(function ($query) use ($attributes) {
-                $query->whereHas($attributes->shift(), function ($query) use ($attributes) {
-                    $this->where($query, $attributes->implode('.'));
-                });
-            });
+        if (! $this->isNested($attribute)) {
+            $query->where($attribute, 'like', '%'.$this->request->get('query').'%');
 
             return;
         }
 
-        $query->where($attribute, 'like', '%'.$this->request->get('query').'%');
+        $attributes = collect(explode('.', $attribute));
+
+        $query->orWhere(function ($query) use ($attributes) {
+            $query->whereHas($attributes->shift(), function ($query) use ($attributes) {
+                $this->where($query, $attributes->implode('.'));
+            });
+        });
     }
 
     private function order()
@@ -146,8 +145,7 @@ class OptionsBuilder implements Responsable
     private function limit()
     {
         $limit = $this->request->get('limit')
-            ?? self::Limit
-            - count($this->value);
+            ?? self::Limit - count($this->value);
 
         $this->query->limit($limit);
 
