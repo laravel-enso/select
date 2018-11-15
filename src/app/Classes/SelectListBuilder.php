@@ -42,14 +42,15 @@ class SelectListBuilder
     private function processParams()
     {
         if (!request()->filled('params')) {
-            return false;
+            return $this;
         }
 
-        $params = json_decode(request('params'));
+        collect(json_decode(request('params')))
+            ->each(function ($value, $column) {
+                $this->query->whereIn($column, (array) $value);
+            });
 
-        foreach ($params as $column => $value) {
-            $this->query->where($column, $value);
-        }
+        return $this;
     }
 
     private function processPivotParams()
