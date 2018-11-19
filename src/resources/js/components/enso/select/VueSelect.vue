@@ -184,6 +184,10 @@ export default {
                 addTag: 'Add option',
             }),
         },
+        translateFields: {
+            type: Boolean,
+            default: false,
+        },
         i18n: {
             type: Function,
             default(key) {
@@ -438,7 +442,9 @@ export default {
         },
         optionLabel(option, label) {
             return label.split('.')
-                .reduce((result, property) => result[property], option);
+                .reduce((result, property) =>
+                    (this.translateFields)? this.i18n(result[property]) : result[property]
+                    , option);
         },
     },
 };
