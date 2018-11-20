@@ -441,10 +441,12 @@ export default {
             return this.$el.querySelectorAll('.dropdown-item')[this.position];
         },
         optionLabel(option, label) {
-            return label.split('.')
-                .reduce((result, property) =>
-                    (this.translated)? this.i18n(result[property]) : result[property]
-                    , option);
+            const optionLabel = label.split('.')
+                    .reduce((result, property) => result[property], option);
+
+             return this.translated
+                    ? this.i18n(optionLabel)
+                    : optionLabel;
         },
     },
 };
