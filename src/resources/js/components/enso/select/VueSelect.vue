@@ -442,11 +442,11 @@ export default {
         },
         optionLabel(option, label) {
             const optionLabel = label.split('.')
-                    .reduce((result, property) => result[property], option);
+                .reduce((result, property) => result[property], option);
 
-             return this.translated
-                    ? this.i18n(optionLabel)
-                    : optionLabel;
+            return this.translated
+                ? this.i18n(optionLabel)
+                : optionLabel;
         },
     },
 };
