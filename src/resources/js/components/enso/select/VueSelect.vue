@@ -184,7 +184,7 @@ export default {
                 addTag: 'Add option',
             }),
         },
-        translateFields: {
+        translated: {
             type: Boolean,
             default: false,
         },
@@ -443,7 +443,7 @@ export default {
         optionLabel(option, label) {
             return label.split('.')
                 .reduce((result, property) =>
-                    (this.translateFields)? this.i18n(result[property]) : result[property]
+                    (this.translated)? this.i18n(result[property]) : result[property]
                     , option);
         },
     },
