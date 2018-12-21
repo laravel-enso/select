@@ -76,9 +76,13 @@ class OptionsBuilder implements Responsable
         }
 
         collect(json_decode($this->request->get('pivotParams')))
-            ->each(function ($param, $table) {
-                $this->query->whereHas($table, function ($query) use ($param) {
-                    $query->whereIn('id', (array) $param->id);
+            ->each(function ($param, $relation) {
+                $this->query->whereHas($relation, function ($query) use ($param) {
+                    collect($param)->each(
+                        function ($value, $attribute) use ($query) {
+                            $query->whereIn($attribute, (array) $value);
+                        }
+                    );
                 });
             });
 
