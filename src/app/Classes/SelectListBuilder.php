@@ -63,7 +63,11 @@ class SelectListBuilder
 
         foreach ($pivotParams as $table => $param) {
             $this->query = $this->query->whereHas($table, function ($query) use ($param) {
-                $query->whereId($param->id);
+                collect($param)->each(
+                    function ($value, $attribute) use ($query) {
+                        $query->whereIn($attribute, (array) $value);
+                    }
+                );
             });
         }
     }
