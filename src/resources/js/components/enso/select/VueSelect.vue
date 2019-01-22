@@ -34,7 +34,7 @@
                         <span v-if="!multiple && hasSelection">
                             {{ selection }}
                         </span>
-                        <span v-else-if="!hasSelection && hasOptions">
+                        <span v-if="!hasSelection && hasOptions">
                             {{ i18n(placeholder) }}
                         </span>
                         <span v-else-if="!hasOptions">
@@ -124,15 +124,28 @@ export default {
             type: Boolean,
             default: false,
         },
+        errorHandler: {
+            type: Function,
+            default(error) {
+                if (Object.keys(this.$options.methods).includes('handleError')) {
+                    this.handleError(error);
+                    return;
+                }
+
+                throw error;
+            },
+        },
         hasError: {
             type: Boolean,
             default: false,
         },
         i18n: {
             type: Function,
-            default: key => (Object.keys(this.$options.methods).includes('__')
-                ? this.__(key)
-                : key),
+            default(key) {
+                return Object.keys(this.$options.methods).includes('__')
+                    ? this.__(key)
+                    : key;
+            },
         },
         label: {
             type: String,
@@ -300,7 +313,7 @@ export default {
                     this.processOptions(data);
                     this.$emit('fetch', this.optionList);
                     this.loading = false;
-                }).catch(error => this.handleError(error));
+                }).catch(error => this.errorHandler(error));
         },
         requestParams() {
             return {
