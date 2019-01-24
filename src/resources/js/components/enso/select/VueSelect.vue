@@ -1,5 +1,4 @@
 <template>
-
     <div :class="['dropdown', { 'is-active': dropdown }]"
         v-click-outside="hideDropdown">
         <div class="dropdown-trigger">
@@ -64,8 +63,12 @@
                     <span v-html="highlight(optionLabel(option))"/>
                     <span :class="['label tag', isSelected(option) ? 'is-warning' : 'is-success']"
                         v-if="index === position && !disableClear">
-                        <span v-if="isSelected(option)">{{ i18n(labels.deselect) }}</span>
-                        <span v-else>{{ i18n(labels.select) }}</span>
+                        <span v-if="isSelected(option)">
+                            {{ i18n(labels.deselect) }}
+                        </span>
+                        <span v-else>
+                            {{ i18n(labels.select) }}
+                        </span>
                     </span>
                     <span class="icon is-small selected has-text-success"
                         v-else-if="isSelected(option)">
@@ -84,7 +87,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -246,12 +248,13 @@ export default {
             }
 
             if (this.multiple) {
-                return this.optionList.filter(option =>
-                    this.value.includes(option[this.trackBy]));
+                return this.optionList
+                    .filter(option => this.value
+                        .includes(option[this.trackBy]));
             }
 
-            const option = this.optionList.find(option =>
-                option[this.trackBy] === this.value);
+            const option = this.optionList
+                .find(option => option[this.trackBy] === this.value);
 
             return this.optionLabel(option);
         },
@@ -338,14 +341,13 @@ export default {
         },
         optionsMatchValue() {
             if (this.multiple) {
-                return this.optionList.findIndex(option =>
-                    this.value.findIndex(val =>
-                        val === option[this.trackBy]) >= 0)
-                    >= 0;
+                return this.optionList
+                    .findIndex(option => this.value
+                        .findIndex(val => val === option[this.trackBy]) >= 0) >= 0;
             }
 
-            return this.optionList.findIndex(option =>
-                option[this.trackBy] === this.value) >= 0;
+            return this.optionList
+                .findIndex(option => option[this.trackBy] === this.value) >= 0;
         },
         showDropdown() {
             if (this.readonly || this.disabled) {
@@ -418,8 +420,7 @@ export default {
         },
         isSelected(option) {
             return this.multiple
-                ? this.value.findIndex(item =>
-                    item === option[this.trackBy]) >= 0
+                ? this.value.findIndex(item => item === option[this.trackBy]) >= 0
                 : this.value !== null
                     && this.value === option[this.trackBy];
         },
