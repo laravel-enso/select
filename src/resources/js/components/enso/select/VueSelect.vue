@@ -52,7 +52,7 @@
                 </div>
             </fieldset>
         </div>
-        <div class="dropdown-menu">
+        <div class="dropdown-menu" v-if="!reloading">
             <div class="dropdown-content">
                 <a class="dropdown-item"
                     v-for="(option, index) in filteredOptions"
@@ -216,6 +216,7 @@ export default {
     data: v => ({
         optionList: v.options,
         loading: false,
+        reloading: false,
         query: '',
         dropdown: false,
         position: null,
@@ -304,17 +305,21 @@ export default {
                 ? route(this.source)
                 : this.source;
         },
-        fetch() {
+        fetch(queryData) {
             if (!this.isServerSide) {
                 return;
             }
 
+            if(!queryData)
+                this.reloading = true;
             this.loading = true;
 
             axios.get(this.path, { params: this.requestParams() })
                 .then(({ data }) => {
                     this.processOptions(data);
                     this.$emit('fetch', this.optionList);
+                    if(!queryData)
+                        this.reloading = false;
                     this.loading = false;
                 }).catch(error => this.errorHandler(error));
         },
