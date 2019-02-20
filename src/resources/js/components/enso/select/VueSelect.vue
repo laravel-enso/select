@@ -30,10 +30,13 @@
                             v-if="dropdown">
                     </div>
                     <div v-if="!dropdown">
-                        <span v-if="!multiple && hasSelection">
+                        <span v-if="reloading">
+                            {{ i18n(labels.loading) }}
+                        </span>
+                        <span v-else-if="!multiple && hasSelection">
                             {{ selection }}
                         </span>
-                        <span v-if="!hasSelection && hasOptions">
+                        <span v-else-if="!hasSelection && hasOptions">
                             {{ i18n(placeholder) }}
                         </span>
                         <span v-else-if="!hasOptions">
@@ -158,6 +161,7 @@ export default {
             default: () => ({
                 select: 'select',
                 deselect: 'deselect',
+                loading: 'Loading...',
                 noOptions: 'No options available',
                 noResults: 'No search results found',
                 addTag: 'Add option',
@@ -310,16 +314,18 @@ export default {
                 return;
             }
 
-            if(!queryData)
+            if(!queryData) {
                 this.reloading = true;
+            }
             this.loading = true;
 
             axios.get(this.path, { params: this.requestParams() })
                 .then(({ data }) => {
                     this.processOptions(data);
                     this.$emit('fetch', this.optionList);
-                    if(!queryData)
+                    if(!queryData) {
                         this.reloading = false;
+                    }
                     this.loading = false;
                 }).catch(error => this.errorHandler(error));
         },
