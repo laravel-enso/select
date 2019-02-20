@@ -11,6 +11,9 @@
                 @focus="showDropdown">
                 <div class="select-value">
                     <div class="field is-grouped is-grouped-multiline">
+                        <span v-if="reloading && dropdown">
+                            {{ i18n(labels.loading) }}
+                        </span>
                         <div class="control"
                             v-if="multiple">
                             <tag v-for="option in selection"
