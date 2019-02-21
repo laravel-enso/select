@@ -42,10 +42,10 @@
                     </div>
                     <span class="is-loading"
                         v-if="loading"/>
-                    <a class="delete is-small"
+                    <a class="delete is-small" :class="rtlClass"
                         v-if="!disableClear && !loading && hasSelection && !readonly && !disabled"
                         @mousedown.prevent.self="clear"/>
-                    <span class="icon is-small angle"
+                    <span class="icon is-small angle" :class="rtlClass"
                         :aria-hidden="dropdown">
                         <fa icon="angle-up"/>
                     </span>
@@ -61,8 +61,9 @@
                     @mousemove="position = index"
                     @click="hit()">
                     <span v-html="highlight(optionLabel(option))"/>
-                    <span :class="['label tag', isSelected(option) ? 'is-warning' : 'is-success']"
-                        v-if="index === position && !disableClear">
+                    <span :class="['label tag',
+                    isSelected(option) ? 'is-warning' : 'is-success', rtlClass]"
+                          v-if="index === position && !disableClear">
                         <span v-if="isSelected(option)">
                             {{ i18n(labels.deselect) }}
                         </span>
@@ -70,7 +71,7 @@
                             {{ i18n(labels.select) }}
                         </span>
                     </span>
-                    <span class="icon is-small selected has-text-success"
+                    <span class="icon is-small selected has-text-success" :class="rtlClass"
                         v-else-if="isSelected(option)">
                         <fa icon="check"/>
                     </span>
@@ -79,7 +80,7 @@
                     v-if="!hasFilteredOptions"
                     @click="taggable ? $emit('add-tag', query) : null">
                     {{ i18n(labels.noResults) }}
-                    <span class="label tag is-info"
+                    <span class="label tag is-info" :class="rtlClass"
                         v-if="taggable">
                         {{ i18n(labels.addTag) }}
                     </span>
@@ -91,6 +92,7 @@
 
 <script>
 
+import { mapGetters } from 'vuex';
 import debounce from 'lodash/debounce';
 import vClickOutside from 'v-click-outside';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -223,6 +225,7 @@ export default {
     }),
 
     computed: {
+        ...mapGetters('preferences', ['rtlClass']),
         isServerSide() {
             return this.source !== null;
         },
@@ -422,7 +425,7 @@ export default {
             return this.multiple
                 ? this.value.findIndex(item => item === option[this.trackBy]) >= 0
                 : this.value !== null
-                    && this.value === option[this.trackBy];
+                && this.value === option[this.trackBy];
         },
         keyDown() {
             if (!this.hasFilteredOptions || this.loading
@@ -547,13 +550,23 @@ export default {
                     .angle {
                         position: absolute;
                         top: 0.55rem;
-                        right: 0.6rem;
+                        &.left {
+                            right: 0.6rem;
+                        }
+                        &.right {
+                            left: 0.6rem;
+                        }
                     }
 
                     .delete {
                         position: absolute;
-                        right: 1.7rem;
                         top: 0.55rem;
+                        &.left {
+                            right: 1.7rem;
+                        }
+                        &.right {
+                            left: 1.7rem;
+                        }
                     }
 
                     .is-loading {
@@ -603,13 +616,23 @@ export default {
                         padding: 0.3rem;
                         height: 1.3rem;
                         z-index: 1;
-                        right: 1rem;
+                        &.left {
+                            right: 1rem;
+                        }
+                        &.right {
+                            left: 1rem;
+                        }
                     }
 
                     .icon.selected {
                         position: absolute;
                         z-index: 1;
-                        right: 1rem;
+                        &.left {
+                            right: 1rem;
+                        }
+                        &.right {
+                            left: 1rem;
+                        }
                     }
                 }
             }
