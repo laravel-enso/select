@@ -63,7 +63,9 @@ class OptionsBuilder implements Responsable
 
         collect(json_decode($this->request->get('params')))
             ->each(function ($value, $column) {
-                $this->query->whereIn($column, (array) $value);
+                return is_null($value)
+                    ? $this->query->whereNull($column)
+                    : $this->query->whereIn($column, (array) $value);
             });
 
         return $this;
@@ -107,7 +109,7 @@ class OptionsBuilder implements Responsable
         $this->query->where(function ($query) {
             collect($this->queryAttributes)
                 ->each(function ($attribute) use ($query) {
-                    $this->isNested($attribute)
+                    return $this->isNested($attribute)
                         ? $this->where($query, $attribute)
                         : $query->orWhere(
                             $attribute, 'like', '%'.$this->request->get('query').'%'
