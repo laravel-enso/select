@@ -256,7 +256,7 @@ export default {
             const option = this.optionList
                 .find(option => option[this.trackBy] === this.value);
 
-            return this.optionLabel(option);
+            return option ? this.optionLabel(option) : null;
         },
     },
 
