@@ -40,14 +40,14 @@ To install outside of Enso:
 - can use the arrow keys to navigate the list of results and Enter to select/deselect 
 - is as small as can be, without skimping on features
 
-### Configuration & Usage
+## Configuration & Usage
 
 Be sure to check out the full documentation for this package available at [docs.laravel-enso.com](https://docs.laravel-enso.com/backend/select.html)
 
-### Contributions
+## Contributions
 
 are welcome. Pull requests are great, but issues are good too.
 
-### License
+## License
 
 This package is released under the MIT license.
