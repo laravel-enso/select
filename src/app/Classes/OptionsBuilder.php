@@ -12,31 +12,32 @@ class OptionsBuilder implements Responsable
 
     private $queryAttributes;
     private $query;
-    private $data;
     private $request;
     private $selected;
     private $trackBy;
     private $value;
+    private $resource;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes, string $resource = null)
     {
-        $this->queryAttributes = $queryAttributes;
         $this->query = $query;
         $this->trackBy = $trackBy;
+        $this->queryAttributes = $queryAttributes;
+        $this->resource = $resource;
     }
 
     public function toResponse($request)
     {
         $this->request = $request;
 
-        $this->run();
-
-        return $this->data;
+        return $this->resource
+            ? $this->resource::collection($this->data())
+            : $this->data();
     }
 
-    private function run()
+    private function data()
     {
-        $this->setValue()
+        return $this->setValue()
             ->setParams()
             ->setPivotParams()
             ->setSelected()
@@ -160,7 +161,7 @@ class OptionsBuilder implements Responsable
 
     private function get()
     {
-        $this->data = $this->selected
+        return $this->selected
             ->merge($this->query->get());
     }
 
