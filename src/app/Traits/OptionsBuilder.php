@@ -15,7 +15,7 @@ trait OptionsBuilder
                 : $this->model::query(),
             $request->get('trackBy') ?? 'id',
             $this->queryAttributes ?? ['name'],
-            $this->resource ?? null,
+            $this->resource ?? null
         );
     }
 }
