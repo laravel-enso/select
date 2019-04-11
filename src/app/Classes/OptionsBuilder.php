@@ -151,7 +151,7 @@ class OptionsBuilder implements Responsable
 
     private function limit()
     {
-        $limit = $this->request->get('limit')
+        $limit = $this->request->get('paginate')
             ?? self::Limit - count($this->value);
 
         $this->query->limit($limit);
