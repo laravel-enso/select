@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     private function publishDependencies()
-    {        
+    {
         $this->publishes([
             __DIR__.'/config' => config_path('enso'),
         ], 'select-config');
