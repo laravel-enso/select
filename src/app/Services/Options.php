@@ -1,12 +1,12 @@
 <?php
 
-namespace LaravelEnso\Select\app\Classes;
+namespace LaravelEnso\Select\app\Services;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Responsable;
 
-class OptionsBuilder implements Responsable
+class Options implements Responsable
 {
     private const Limit = 100;
 
@@ -64,7 +64,7 @@ class OptionsBuilder implements Responsable
 
         collect(json_decode($this->request->get('params')))
             ->each(function ($value, $column) {
-                return is_null($value)
+                return $value === null
                     ? $this->query->whereNull($column)
                     : $this->query->whereIn($column, (array) $value);
             });

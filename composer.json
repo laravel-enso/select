@@ -7,7 +7,7 @@
         "bootstrap-select",
         "select-server-side"
     ],
-    "homepage": "https://github.com/laravel-enso/Select",
+    "homepage": "https://github.com/laravel-enso/select",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -29,7 +29,9 @@
     },
     "extra": {
         "laravel": {
-            "providers": [],
+            "providers": [
+                "LaravelEnso\\Select\\AppServiceProvider"
+            ],
             "aliases": {}
         }
     }
