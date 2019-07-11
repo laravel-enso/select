@@ -109,8 +109,8 @@ class Options implements Responsable
 
         $this->query->where(function ($query) {
             collect(explode(' ', $this->request->get('query')))
-                ->each(function($argument) use ($query) {
-                    $query->where(function($query) use ($argument) {
+                ->each(function ($argument) use ($query) {
+                    $query->where(function ($query) use ($argument) {
                         collect($this->queryAttributes)
                             ->each(function ($attribute) use ($query, $argument) {
                                 return $this->isNested($attribute)
