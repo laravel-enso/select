@@ -108,13 +108,18 @@ class Options implements Responsable
         }
 
         $this->query->where(function ($query) {
-            collect($this->queryAttributes)
-                ->each(function ($attribute) use ($query) {
-                    return $this->isNested($attribute)
-                        ? $this->where($query, $attribute)
-                        : $query->orWhere(
-                            $attribute, 'like', '%'.$this->request->get('query').'%'
-                        );
+            collect(explode(' ', $this->request->get('query')))
+                ->each(function($argument) use ($query) {
+                    $query->where(function($query) use ($argument) {
+                        collect($this->queryAttributes)
+                            ->each(function ($attribute) use ($query, $argument) {
+                                return $this->isNested($attribute)
+                                    ? $this->where($query, $attribute)
+                                    : $query->orWhere(
+                                        $attribute, 'like', '%'.$argument.'%'
+                                    );
+                            });
+                    });
                 });
         });
 
