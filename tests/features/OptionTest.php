@@ -29,11 +29,11 @@ class OptionTest extends TestCase
     /** @test */
     public function can_get_options_without_query_or_params()
     {
-        $response = $this->requestResponse([]);
+        $response = $this->requestResponse();
 
         $this->assertCount(User::count(), $response);
 
-        $this->assertTrue($response->pluck('id')->contains($this->testModel->id));
+        $this->assertTrue($this->whithinResponse($response));
     }
 
     /** @test */
