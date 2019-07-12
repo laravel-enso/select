@@ -1,31 +1,23 @@
 <?php
-
-use Illuminate\Http\Request;
-use LaravelEnso\Forms\app\TestTraits\DestroyForm;
-use LaravelEnso\Forms\app\TestTraits\EditForm;
-use LaravelEnso\Select\app\Traits\OptionsBuilder;
 use Tests\TestCase;
-use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
 use LaravelEnso\Core\app\Models\User;
-use LaravelEnso\Core\app\Models\UserGroup;
-use LaravelEnso\DataImport\app\Enums\Statuses;
-use LaravelEnso\DataImport\app\Models\DataImport;
-use LaravelEnso\DataImport\app\Services\Template;
+use LaravelEnso\Select\app\Traits\OptionsBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use LaravelEnso\Tables\app\Traits\Tests\Datatable;
 
 class OptionTest extends TestCase
 {
     use OptionsBuilder, RefreshDatabase;
 
     private $testModel;
-    private $queryAttributes=["id"];
 
-    protected function setUp(): void
+    protected $queryAttributes = ['email', 'person.name'];
+
+    public function setUp(): void
     {
         parent::setUp();
+
+        $this->withoutExceptionHandling();
 
         $this->seed()
             ->actingAs(User::first());
@@ -34,134 +26,108 @@ class OptionTest extends TestCase
             ->create();
     }
 
-    public function tearDown(): void
+    /** @test */
+    public function can_get_options_without_query_or_params()
     {
-//        $this->cleanUp();
-        parent::tearDown();
+        $response = $this->requestResponse([]);
+
+        $this->assertCount(User::count(), $response);
+
+        $this->assertTrue($response->pluck('id')->contains($this->testModel->id));
     }
 
     /** @test */
-    public function select_without_condition()
+    public function can_get_empty_options_with_restricting_params()
     {
-        $response = $this->sendRequest([]);
-        $this->assertCount(User::get()->count(),$response);
-        $this->assertTrue($response->pluck("id")->contains($this->testModel->id));
+        $response = $this->requestResponse(['params' => ['id' => 0]]);
+
+        $this->assertCount(0, $response);
+    }
+    
+    /** @test */
+    public function can_get_empty_options_with_restricting_query()
+    {
+        $response = $this->requestResponse(['query' => 'NO_NAME']);
+
+        $this->assertCount(0, $response);
     }
 
     /** @test */
-    public function select_with_empty_result()
+    public function can_get_selected_options_with_restricting_query()
     {
-        $response = $this->sendRequest([
-            "params"=>json_encode(["id"=>null])
+        $response = $this->requestResponse([
+            'value' => $this->testModel->id,
+            'query' => 'NO_NAME',
         ]);
-        $this->assertCount(0,$response);
+
+        $this->assertCount(1, $response);
+
+        $this->assertTrue($this->whithinResponse($response));
     }
 
     /** @test */
-    public function select_with_select_and_no_query()
+    public function can_get_filtered_options()
     {
-        $response = $this->sendRequest([
-            "value"=> $this->testModel->id,
-            "query"=>"NO_NAME",
+        $response = $this->requestResponse([
+            'query' => $this->testModel->email,
         ]);
-        $this->assertCount(1,$response);
+
+        $this->assertTrue($this->whithinResponse($response));
     }
 
     /** @test */
-    public function select_with_query_and_no_select()
+    public function can_get_filtered_on_nested_attrs_options()
     {
-        $response = $this->sendRequest([
-            "query"=> $this->testModel->id,
-            "trackBy"=>"id"
+        $response = $this->requestResponse([
+            'query' => $this->testModel->person->name,
         ]);
-        $this->assertCount(User::whereId($this->testModel->id)->get()->count(),$response);
+
+        $this->assertTrue($this->whithinResponse($response));
     }
 
     /** @test */
-    public function select_with_nested_query()
+    public function can_get_options_with_pivot_params()
     {
-        $this->queryAttributes = ["person.id"];
-        $response = $this->sendRequest([
-            "query"=> $this->testModel->person_id,
-            "trackBy"=>"id"
+        $response = $this->requestResponse([
+            'pivotParams' => ['role' => ['name' => $this->testModel->role->name]]
         ]);
-        $this->assertEqualsResults(User::wherePersonId($this->testModel->person_id),$response);
-    }
-    /** @test */
-    public function select_with_pivot()
-    {
-        $this->queryAttributes = ["person.id"];
-        $response = $this->sendRequest([
-            "query"=> $this->testModel->person_id,
-            "pivotParams"=>json_encode([
-                    "person"=>[
-                        "id"=>$this->testModel->person_id,
-                    ]
-                ]
-            )        ]);
-        $this->assertEqualsResults(User::wherePersonId($this->testModel->person_id),$response);
+
+        $this->assertTrue($this->whithinResponse($response));
     }
 
     /** @test */
-    public function select_with_order()
+    public function can_paginate()
     {
-        $this->testModel->created_at = "2012-12-12";
-        $this->testModel->save();
-        $this->queryAttributes = ["created_at"];
-        $response = $this->sendRequest([]);
-        $this->assertEquals(
-            User::orderBy("created_at")->get()->pluck("id")->values()->toArray(),
-            $response->pluck("id")->values()->toArray()
+        $paginate = 0;
+
+        $response = $this->requestResponse(['paginate' => $paginate]);
+
+        $this->assertCount($paginate, $response);
+    }
+
+    private function whithinResponse($response)
+    {
+        return $response->pluck('email')
+            ->contains($this->testModel->email);
+    }
+
+    private function requestResponse(array $params = [])
+    {
+        $request = new Request();
+
+        collect($params)->each(function($value, $key) use ($request) {
+            $request->merge([
+                $key => is_array($value) ? json_encode($value) : $value
+            ]);
+        });
+
+        return collect(
+            $this->__invoke($request)->toResponse($request)
         );
     }
-
-
-    /** @test */
-    public function select_with_limit()
-    {
-        $response = $this->sendRequest([
-            "paginate"=>1
-        ]);
-        $this->assertCount(1, $response);
-    }
-
-
-
 
     public function query(Request $request)
     {
         return User::query();
     }
-
-    /**
-     * @param array $params
-     * @return \Illuminate\Support\Collection
-     */
-    private function sendRequest(array $params =[])
-    {
-        $request = $this->createRequest($params);
-        $response = collect(json_decode($this->__invoke($request)->toResponse($request), true));
-        return $response;
-    }
-
-    private function createRequest(
-        $content,
-        $method = "post",
-        $uri = '/test',
-        $server = ['CONTENT_TYPE' => 'application/json'],
-        $parameters = [],
-        $cookies = [],
-        $files = []
-    ) {
-        return Request::createFromBase(\Symfony\Component\HttpFoundation\Request::create($uri, $method, $parameters, $cookies, $files, $server, json_encode($content)));
-    }
-
-    private function assertEqualsResults($query, $response)
-    {
-        $this->assertEquals(
-            $query->get()->pluck("id")->values()->toArray(),
-            $response->pluck("id")->values()->toArray()
-        );
-    }
-
 }
