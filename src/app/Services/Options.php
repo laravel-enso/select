@@ -114,9 +114,11 @@ class Options implements Responsable
                         collect($this->queryAttributes)
                             ->each(function ($attribute) use ($query, $argument) {
                                 return $this->isNested($attribute)
-                                    ? $this->where($query, $attribute)
+                                    ? $this->whereHasRelation($query, $attribute, $argument)
                                     : $query->orWhere(
-                                        $attribute, 'like', '%'.$argument.'%'
+                                        $attribute,
+                                        config('enso.select.comparisonOperator'),
+                                        '%'.$argument.'%'
                                     );
                             });
                     });
@@ -126,19 +128,23 @@ class Options implements Responsable
         return $this;
     }
 
-    private function where($query, $attribute)
+    private function whereHasRelation($query, $attribute, $argument)
     {
         if (! $this->isNested($attribute)) {
-            $query->where($attribute, 'like', '%'.$this->request->get('query').'%');
+            $query->where(
+                $attribute,
+                config('enso.select.comparisonOperator'),
+                '%'.$argument.'%'
+            );
 
             return;
         }
 
         $attributes = collect(explode('.', $attribute));
 
-        $query->orWhere(function ($query) use ($attributes) {
-            $query->whereHas($attributes->shift(), function ($query) use ($attributes) {
-                $this->where($query, $attributes->implode('.'));
+        $query->orWhere(function ($query) use ($attributes, $argument) {
+            $query->whereHas($attributes->shift(), function ($query) use ($attributes, $argument) {
+                $this->whereHasRelation($query, $attributes->implode('.'), $argument);
             });
         });
     }
