@@ -134,7 +134,7 @@ class OptionTest extends TestCase
         );
     }
 
-    private function query(Request $request)
+    public function query()
     {
         return ParentModel::query();
     }
