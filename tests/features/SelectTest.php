@@ -36,7 +36,7 @@ class OptionTest extends TestCase
     {
         $response = $this->requestResponse();
 
-        $this->assertCount(TestModel::count(), $response);
+        $this->assertCount(SelectTestModel::count(), $response);
 
         $this->assertTrue($this->whithinResponse($response));
     }
@@ -134,19 +134,19 @@ class OptionTest extends TestCase
 
     public function query()
     {
-        return TestModel::query();
+        return SelectTestModel::query();
     }
 
     private function createTestModel()
     {
-        return TestModel::create([
+        return SelectTestModel::create([
             'email' => $this->faker->email,
         ]);
     }
 
     private function createRelation()
     {
-        return Relation::create([
+        return SelectRelation::create([
             'name' => $this->faker->name,
             'parent_id' => $this->testModel->id,
         ]);
@@ -154,7 +154,7 @@ class OptionTest extends TestCase
 
     private function createTestModelTable()
     {
-        Schema::create('test_models', function ($table) {
+        Schema::create('select_test_models', function ($table) {
             $table->increments('id');
             $table->string('email');
             $table->timestamps();
@@ -163,7 +163,7 @@ class OptionTest extends TestCase
 
     private function createRelationTable()
     {
-        Schema::create('relations', function ($table) {
+        Schema::create('select_relations', function ($table) {
             $table->increments('id');
             $table->integer('parent_id');
             $table->foreign('parent_id')->references('id')->on('test_models');
@@ -173,17 +173,17 @@ class OptionTest extends TestCase
     }
 }
 
-class TestModel extends Model
+class SelectTestModel extends Model
 {
     protected $fillable = ['email'];
 
     public function relation()
     {
-        return $this->hasOne(Relation::class, 'parent_id');
+        return $this->hasOne(SelectRelation::class, 'parent_id');
     }
 }
 
-class Relation extends Model
+class SelectRelation extends Model
 {
     protected $fillable = ['name', 'parent_id'];
 }
