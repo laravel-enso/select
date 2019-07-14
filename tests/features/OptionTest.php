@@ -1,37 +1,34 @@
 <?php
 
+use Faker\Factory;
 use Tests\TestCase;
 use Illuminate\Http\Request;
-use LaravelEnso\Select\app\Traits\OptionsBuilder;
-use Faker\Factory;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use LaravelEnso\Select\app\Traits\OptionsBuilder;
 
 class OptionTest extends TestCase
 {
     use OptionsBuilder;
 
     private $testModel;
-
     private $faker;
 
-    protected $queryAttributes = ['email', 'child.name'];
+    protected $queryAttributes = ['email', 'relation.name'];
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
 
         $this->faker = Factory::create();
 
-        $this->createTables();
+        $this->createTestModelTable();
+        $this->createRelationTable();
 
-        $this->testModel = $this->createParentModels();
-
-        $this->createChildModel($this->testModel);
-
-        $this->createChildModel($this->createParentModels());
+        $this->testModel = $this->createTestModel();
+        $this->createRelation();
     }
 
     /** @test */
@@ -39,7 +36,7 @@ class OptionTest extends TestCase
     {
         $response = $this->requestResponse();
 
-        $this->assertCount(ParentModel::count(), $response);
+        $this->assertCount(TestModel::count(), $response);
 
         $this->assertTrue($this->whithinResponse($response));
     }
@@ -87,9 +84,8 @@ class OptionTest extends TestCase
     public function can_get_filtered_on_nested_attrs_options()
     {
         $response = $this->requestResponse([
-            'query' => $this->testModel->child->name,
+            'query' => $this->testModel->relation->name,
         ]);
-
         $this->assertTrue($this->whithinResponse($response));
     }
 
@@ -97,7 +93,9 @@ class OptionTest extends TestCase
     public function can_get_options_with_pivot_params()
     {
         $response = $this->requestResponse([
-            'pivotParams' => ['child' => ['name' => $this->testModel->child->name]]
+            'pivotParams' => [
+                'relation' => ['name' => $this->testModel->relation->name]
+            ]
         ]);
 
         $this->assertTrue($this->whithinResponse($response));
@@ -136,54 +134,56 @@ class OptionTest extends TestCase
 
     public function query()
     {
-        return ParentModel::query();
+        return TestModel::query();
     }
 
-
-    private function createParentModels()
+    private function createTestModel()
     {
-        return ParentModel::create([
+        return TestModel::create([
             'email' => $this->faker->email,
         ]);
     }
 
-    private function createChildModel($parent = null)
+    private function createRelation()
     {
-        return ChildModel::create([
+        return Relation::create([
             'name' => $this->faker->name,
-            'parent_id' => $parent !== null ? $parent->id : null,
+            'parent_id' => $this->testModel->id,
         ]);
     }
 
-    private function createTables()
+    private function createTestModelTable()
     {
-        Schema::create('parent_models', function ($table) {
+        Schema::create('test_models', function ($table) {
             $table->increments('id');
             $table->string('email');
             $table->timestamps();
         });
-        
-        Schema::create('child_models', function ($table) {
+    }
+
+    private function createRelationTable()
+    {
+        Schema::create('relations', function ($table) {
             $table->increments('id');
+            $table->integer('parent_id');
+            $table->foreign('parent_id')->references('id')->on('test_models');
             $table->string('name');
-            $table->integer('parent_id')->nullable();
             $table->timestamps();
         });
     }
-
 }
 
-class ParentModel extends Model
+class TestModel extends Model
 {
     protected $fillable = ['email'];
 
-    public function child()
+    public function relation()
     {
-        return $this->hasOne(ChildModel::class, 'parent_id');
+        return $this->hasOne(Relation::class, 'parent_id');
     }
 }
 
-class ChildModel extends Model
+class Relation extends Model
 {
     protected $fillable = ['name', 'parent_id'];
 }
