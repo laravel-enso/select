@@ -108,24 +108,32 @@ class Options implements Responsable
         }
 
         $this->query->where(function ($query) {
-            collect(explode(' ', $this->request->get('query')))
-                ->each(function ($argument) use ($query) {
-                    $query->where(function ($query) use ($argument) {
-                        collect($this->queryAttributes)
-                            ->each(function ($attribute) use ($query, $argument) {
-                                return $this->isNested($attribute)
-                                    ? $this->whereHasRelation($query, $attribute, $argument)
-                                    : $query->orWhere(
-                                        $attribute,
-                                        config('enso.select.comparisonOperator'),
-                                        '%'.$argument.'%'
-                                    );
-                            });
-                    });
-                });
+            $this->searchArguments()->each(function ($argument) use ($query) {
+                $this->match($query, $argument);
+            });
         });
 
         return $this;
+    }
+
+    private function match($query, $argument)
+    {
+        $query->where(function ($query) use ($argument) {
+            collect($this->queryAttributes)->each(function ($attribute) use ($query, $argument) {
+                return $this->isNested($attribute)
+                    ? $this->whereHasRelation($query, $attribute, $argument)
+                    : $query->orWhere(
+                        $attribute,
+                        config('enso.select.comparisonOperator'),
+                        '%'.$argument.'%'
+                    );
+            });
+        });
+    }
+
+    private function searchArguments()
+    {
+        return collect(explode(' ', $this->request->get('query')));
     }
 
     private function whereHasRelation($query, $attribute, $argument)
