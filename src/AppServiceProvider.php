@@ -8,18 +8,18 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadDependencies()
-            ->publishDependencies();
+        $this->load()
+            ->publish();
     }
 
-    private function loadDependencies()
+    private function load()
     {
         $this->mergeConfigFrom(__DIR__.'/config/select.php', 'enso.select');
 
         return $this;
     }
 
-    private function publishDependencies()
+    private function publish()
     {
         $this->publishes([
             __DIR__.'/config' => config_path('enso'),
