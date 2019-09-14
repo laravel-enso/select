@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use LaravelEnso\Select\app\Traits\OptionsBuilder;
 
-class OptionTest extends TestCase
+class SelectTest extends TestCase
 {
     use OptionsBuilder;
 
@@ -166,7 +166,7 @@ class OptionTest extends TestCase
         Schema::create('select_relations', function ($table) {
             $table->increments('id');
             $table->integer('parent_id');
-            $table->foreign('parent_id')->references('id')->on('test_models');
+            $table->foreign('parent_id')->references('id')->on('select_test_models');
             $table->string('name');
             $table->timestamps();
         });
