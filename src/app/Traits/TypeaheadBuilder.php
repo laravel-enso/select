@@ -8,7 +8,6 @@ use LaravelEnso\Select\app\Services\Options;
 
 trait TypeaheadBuilder
 {
-
     protected $request;
 
     public function __invoke(Request $request)
