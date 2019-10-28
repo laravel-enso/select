@@ -18,29 +18,7 @@ For live examples and demos, you may visit [laravel-enso.com](https://www.larave
 
 <sup>click on the photo to view a short demo in compatible browsers</sup>
 
-## Installation
-
-Comes pre-installed in Enso.
-
-To install outside of Enso:
-
-1. install the package: `composer require laravel-enso/select`
-2. install the front end api implementation: `yarn add @enso-ui/select`
-
-## Features
-
-- a standalone component with minimal dependencies
-- the select options can be retrieved via ajax calls or, given directly, via a parameter
-- when getting the data via ajax, the component can take various parameters for results filtering
-- for the back-end, the package comes with a trait for easy retrieval and formatting of the data 
-- can filter the option list dynamically even based on the model’s one-to-many / many-to-many relationships
-- can search in multiple attributes of a model, and the attribute(s) may be nested
-- can specify the attribute used as label for the select options
-- can be used to create a new 'tag' if no suitable result is found (soon)
-- can use the arrow keys to navigate the list of results and Enter to select/deselect 
-- is as small as can be, without skimping on features
-
-## Configuration & Usage
+### Installation, Configuration & Usage
 
 Be sure to check out the full documentation for this package available at [docs.laravel-enso.com](https://docs.laravel-enso.com/backend/select.html)
 
