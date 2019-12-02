@@ -2,9 +2,9 @@
 
 namespace LaravelEnso\Select\app\Services;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class Options implements Responsable
 {
