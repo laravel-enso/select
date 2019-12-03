@@ -29,8 +29,8 @@ trait TypeaheadBuilder
         $params = json_decode($request->get('params'));
 
         return new Obj([
-            'customParams' => json_encode($params->custom),
-            'pivotParams' => json_encode($params->pivot),
+            'customParams' => json_encode(optional($params)->custom),
+            'pivotParams' => json_encode(optional($params)->pivot),
             'query' => $request->get('query'),
             'paginate' => $request->get('paginate'),
         ]);
