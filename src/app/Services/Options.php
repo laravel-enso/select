@@ -2,9 +2,9 @@
 
 namespace LaravelEnso\Select\app\Services;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class Options implements Responsable
 {
@@ -107,28 +107,13 @@ class Options implements Responsable
             return $this;
         }
 
-        $this->query->where(function ($query) {
-            $this->searchArguments()->each(function ($argument) use ($query) {
-                $this->match($query, $argument);
+        $this->searchArguments()->each(function ($argument) {
+            $this->query->where(function ($query) use ($argument) {
+                $this->matchArgument($query, $argument);
             });
         });
 
         return $this;
-    }
-
-    private function match($query, $argument)
-    {
-        $query->where(function ($query) use ($argument) {
-            collect($this->queryAttributes)->each(function ($attribute) use ($query, $argument) {
-                return $this->isNested($attribute)
-                    ? $this->whereHasRelation($query, $attribute, $argument)
-                    : $query->orWhere(
-                        $attribute,
-                        config('enso.select.comparisonOperator'),
-                        '%'.$argument.'%'
-                    );
-            });
-        });
     }
 
     private function searchArguments()
@@ -136,24 +121,29 @@ class Options implements Responsable
         return collect(explode(' ', $this->request->get('query')));
     }
 
-    private function whereHasRelation($query, $attribute, $argument)
+    private function matchArgument($query, $argument)
     {
-        if (! $this->isNested($attribute)) {
-            $query->where(
-                $attribute,
-                config('enso.select.comparisonOperator'),
-                '%'.$argument.'%'
-            );
-
-            return;
-        }
-
-        $attributes = collect(explode('.', $attribute));
-
-        $query->orWhere(function ($query) use ($attributes, $argument) {
-            $query->whereHas($attributes->shift(), function ($query) use ($attributes, $argument) {
-                $this->whereHasRelation($query, $attributes->implode('.'), $argument);
+        collect($this->queryAttributes)->each(function ($attribute) use ($query, $argument) {
+            $query->orWhere(function ($query) use ($attribute, $argument) {
+                $this->matchAttribute($query, $attribute, $argument);
             });
+        });
+    }
+
+    private function matchAttribute($query, $attribute, $argument)
+    {
+        $isNested = $this->isNested($attribute);
+
+        $query->when($isNested, function ($query) use ($attribute, $argument) {
+            $attributes = collect(explode('.', $attribute));
+
+            $query->whereHas($attributes->shift(), function ($query) use ($attributes, $argument) {
+                $this->matchAttribute($query, $attributes->implode('.'), $argument);
+            });
+        })->when(! $isNested, function ($query) use ($attribute, $argument) {
+            $query->where(
+                $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
+            );
         });
     }
 
