@@ -170,8 +170,8 @@ class Options implements Responsable
 
     private function get()
     {
-        return $this->selected
-            ->merge($this->query->get());
+        return $this->query->get()
+            ->merge($this->selected);
     }
 
     private function isNested($attribute)
