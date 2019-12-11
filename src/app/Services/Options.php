@@ -37,17 +37,17 @@ class Options implements Responsable
 
     private function data()
     {
-        return $this->setValue()
-            ->setParams()
-            ->setPivotParams()
-            ->setSelected()
+        return $this->value()
+            ->params()
+            ->pivotParams()
+            ->selected()
             ->search()
             ->order()
             ->limit()
             ->get();
     }
 
-    private function setValue()
+    private function value()
     {
         $this->value = $this->request->has('value')
             ? (array) $this->request->get('value')
@@ -56,7 +56,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function setParams()
+    private function params()
     {
         if (! $this->request->has('params')) {
             return $this;
@@ -72,7 +72,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function setPivotParams()
+    private function pivotParams()
     {
         if (! $this->request->has('pivotParams')) {
             return $this;
@@ -92,7 +92,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function setSelected()
+    private function selected()
     {
         $query = clone $this->query;
 
