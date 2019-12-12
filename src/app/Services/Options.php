@@ -18,7 +18,7 @@ class Options implements Responsable
     private $value;
     private $resource;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes, ?string $resource = null)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes, ?string $resource)
     {
         $this->query = $query;
         $this->trackBy = $trackBy;
