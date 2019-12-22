@@ -121,11 +121,11 @@ class SelectTest extends TestCase
     {
         $request = new Request();
 
-        collect($params)->each(function ($value, $key) use ($request) {
+        collect($params)->each(fn($value, $key) => (
             $request->merge([
                 $key => is_array($value) ? json_encode($value) : $value
-            ]);
-        });
+            ])
+        ));
 
         return collect(
             $this->__invoke($request)->toResponse($request)
