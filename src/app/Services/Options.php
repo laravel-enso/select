@@ -63,11 +63,11 @@ class Options implements Responsable
         }
 
         collect(json_decode($this->request->get('params')))
-            ->each(function ($value, $column) {
-                return $value === null
+            ->each(fn($value, $column) => (
+                $value === null
                     ? $this->query->whereNull($column)
-                    : $this->query->whereIn($column, (array) $value);
-            });
+                    : $this->query->whereIn($column, (array) $value)
+            ));
 
         return $this;
     }
@@ -79,15 +79,13 @@ class Options implements Responsable
         }
 
         collect(json_decode($this->request->get('pivotParams')))
-            ->each(function ($param, $relation) {
-                $this->query->whereHas($relation, function ($query) use ($param) {
-                    collect($param)->each(
-                        function ($value, $attribute) use ($query) {
-                            $query->whereIn($attribute, (array) $value);
-                        }
-                    );
-                });
-            });
+            ->each(fn($param, $relation) => (
+                $this->query->whereHas($relation, fn($query) => (
+                    collect($param)->each(fn($value, $attribute) => (
+                        $query->whereIn($attribute, (array) $value)
+                    ))
+                ))
+            ));
 
         return $this;
     }
@@ -107,11 +105,9 @@ class Options implements Responsable
             return $this;
         }
 
-        $this->searchArguments()->each(function ($argument) {
-            $this->query->where(function ($query) use ($argument) {
-                $this->matchArgument($query, $argument);
-            });
-        });
+        $this->searchArguments()->each(fn($argument) => (
+            $this->query->where(fn($query) => $this->matchArgument($query, $argument))
+        ));
 
         return $this;
     }
@@ -123,11 +119,11 @@ class Options implements Responsable
 
     private function matchArgument($query, $argument)
     {
-        collect($this->queryAttributes)->each(function ($attribute) use ($query, $argument) {
-            $query->orWhere(function ($query) use ($attribute, $argument) {
-                $this->matchAttribute($query, $attribute, $argument);
-            });
-        });
+        collect($this->queryAttributes)->each(fn($attribute) => (
+            $query->orWhere(fn($query) => (
+                $this->matchAttribute($query, $attribute, $argument)
+            ))
+        ));
     }
 
     private function matchAttribute($query, $attribute, $argument)
@@ -137,14 +133,14 @@ class Options implements Responsable
         $query->when($isNested, function ($query) use ($attribute, $argument) {
             $attributes = collect(explode('.', $attribute));
 
-            $query->whereHas($attributes->shift(), function ($query) use ($attributes, $argument) {
-                $this->matchAttribute($query, $attributes->implode('.'), $argument);
-            });
-        })->when(! $isNested, function ($query) use ($attribute, $argument) {
+            $query->whereHas($attributes->shift(), fn($query) => (
+                $this->matchAttribute($query, $attributes->implode('.'), $argument)
+            ));
+        })->when(! $isNested, fn($query) => (
             $query->where(
                 $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
-            );
-        });
+            )
+        ));
     }
 
     private function order()
