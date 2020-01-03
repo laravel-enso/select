@@ -19,12 +19,13 @@ trait TypeaheadBuilder
                 ? $this->query($this->request)
                 : $this->model::query(),
             $request->get('trackBy') ?? config('enso.select.trackBy'),
-            $this->queryAttributes ?? config('enso.select.queryAttributes'),
-            $this->resource ?? null
-        ))->toResponse($this->request);
+            $this->queryAttributes ?? config('enso.select.queryAttributes')
+        ))->resource($this->resource ?? null)
+        ->appends($this->appends ?? null)
+        ->toResponse($this->request);
     }
 
-    private function convertRequest(Request $request)
+    private function convertRequest(Request $request) //TODO review
     {
         $params = json_decode($request->get('params'));
 

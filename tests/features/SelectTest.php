@@ -1,11 +1,12 @@
 <?php
-
 use Faker\Factory;
-use Tests\TestCase;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use LaravelEnso\Select\app\Traits\OptionsBuilder;
+use Tests\TestCase;
 
 class SelectTest extends TestCase
 {
@@ -13,8 +14,9 @@ class SelectTest extends TestCase
 
     private $testModel;
     private $faker;
-
     protected $queryAttributes = ['email', 'relation.name'];
+    protected $resource = null;
+    protected $appends = null;
 
     public function setUp(): void
     {
@@ -28,25 +30,17 @@ class SelectTest extends TestCase
         $this->createRelationTable();
 
         $this->testModel = $this->createTestModel();
+
         $this->createRelation();
     }
 
     /** @test */
-    public function can_get_options_without_query_or_params()
+    public function can_get_options_without_filters()
     {
         $response = $this->requestResponse();
 
         $this->assertCount(SelectTestModel::count(), $response);
-
         $this->assertTrue($this->whithinResponse($response));
-    }
-
-    /** @test */
-    public function can_get_empty_options_with_restricting_params()
-    {
-        $response = $this->requestResponse(['params' => ['id' => 0]]);
-
-        $this->assertCount(0, $response);
     }
 
     /** @test */
@@ -58,7 +52,25 @@ class SelectTest extends TestCase
     }
 
     /** @test */
-    public function can_get_selected_options_with_restricting_query()
+    public function can_get_empty_options_with_restricting_params()
+    {
+        $response = $this->requestResponse(['params' => ['id' => 0]]);
+
+        $this->assertCount(0, $response);
+    }
+
+    /** @test */
+    public function can_get_empty_options_with_restricting_pivot_params()
+    {
+        $response = $this->requestResponse([
+            'pivotParams' => ['relation' => ['id' => 0]]
+        ]);
+
+        $this->assertCount(0, $response);
+    }
+
+    /** @test */
+    public function can_get_selected_options_with_restricting_filter()
     {
         $response = $this->requestResponse([
             'value' => $this->testModel->id,
@@ -86,6 +98,17 @@ class SelectTest extends TestCase
         $response = $this->requestResponse([
             'query' => $this->testModel->relation->name,
         ]);
+
+        $this->assertTrue($this->whithinResponse($response));
+    }
+
+    /** @test */
+    public function can_get_options_with_param()
+    {
+        $response = $this->requestResponse([
+            'params' => ['email' => $this->testModel->email]
+        ]);
+
         $this->assertTrue($this->whithinResponse($response));
     }
 
@@ -93,9 +116,7 @@ class SelectTest extends TestCase
     public function can_get_options_with_pivot_params()
     {
         $response = $this->requestResponse([
-            'pivotParams' => [
-                'relation' => ['name' => $this->testModel->relation->name]
-            ]
+            'pivotParams' => ['relation' => ['name' => $this->testModel->relation->name]]
         ]);
 
         $this->assertTrue($this->whithinResponse($response));
@@ -105,10 +126,33 @@ class SelectTest extends TestCase
     public function can_paginate()
     {
         $paginate = 0;
-
         $response = $this->requestResponse(['paginate' => $paginate]);
 
         $this->assertCount($paginate, $response);
+    }
+
+    /** @test */
+    public function can_use_resource()
+    {
+        $this->resource = SelectTestResource::class;
+        $response = $this->requestResponse();
+
+        $this->assertCount(SelectTestModel::count(), $response);
+        $this->assertTrue(
+            $response->pluck('resource')->contains('resource')
+        );
+    }
+
+    /** @test */
+    public function can_use_accessors()
+    {
+        $this->appends = ['custom'];
+        $response = $this->requestResponse();
+
+        $this->assertCount(SelectTestModel::count(), $response);
+        $this->assertTrue(
+            $response->first()->toArray()['custom'] === $this->testModel->custom
+        );
     }
 
     private function whithinResponse($response)
@@ -121,13 +165,11 @@ class SelectTest extends TestCase
     {
         $request = new Request();
 
-        collect($params)->each(fn($value, $key) => (
-            $request->merge([
-                $key => is_array($value) ? json_encode($value) : $value
-            ])
-        ));
+        (new Collection($params))->each(fn ($value, $key) => $request->merge([
+            $key => is_array($value) ? json_encode($value) : $value
+        ]));
 
-        return collect(
+        return new Collection(
             $this->__invoke($request)->toResponse($request)
         );
     }
@@ -172,7 +214,6 @@ class SelectTest extends TestCase
         });
     }
 }
-
 class SelectTestModel extends Model
 {
     protected $fillable = ['email'];
@@ -181,9 +222,21 @@ class SelectTestModel extends Model
     {
         return $this->hasOne(SelectRelation::class, 'parent_id');
     }
-}
 
+    public function getCustomAttribute()
+    {
+        return 'custom';
+    }
+}
 class SelectRelation extends Model
 {
     protected $fillable = ['name', 'parent_id'];
+}
+
+class SelectTestResource extends JsonResource
+{
+    public function toArray($request)
+    {
+        return ['resource' => 'resource'];
+    }
 }

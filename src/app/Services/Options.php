@@ -1,29 +1,31 @@
 <?php
 
-namespace LaravelEnso\Select\app\Services;
+namespace LaravelEnso\Select\App\Services;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Options implements Responsable
 {
     private const Limit = 100;
 
-    private $queryAttributes;
-    private $query;
-    private $request;
-    private $selected;
-    private $trackBy;
-    private $value;
-    private $resource;
+    private Builder $query;
+    private string $trackBy;
+    private Collection $queryAttributes;
+    private Request $request;
+    private Collection $selected;
+    private array $value;
+    private ?string $resource;
+    private ?array $appends;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes, ?string $resource)
+    public function __construct(Builder $query, string $trackBy, array $queryAttributes)
     {
         $this->query = $query;
         $this->trackBy = $trackBy;
-        $this->queryAttributes = $queryAttributes;
-        $this->resource = $resource;
+        $this->queryAttributes = new Collection($queryAttributes);
     }
 
     public function toResponse($request)
@@ -35,11 +37,25 @@ class Options implements Responsable
             : $this->data();
     }
 
-    private function data()
+    public function resource(?string $resource): self
     {
-        return $this->value()
-            ->params()
-            ->pivotParams()
+        $this->resource = $resource;
+
+        return $this;
+    }
+
+    public function appends(?array $appends): self
+    {
+        $this->appends = $appends;
+
+        return $this;
+    }
+
+    private function data(): Collection
+    {
+        return $this->computeValue()
+            ->applyParams()
+            ->applyPivotParams()
             ->selected()
             ->search()
             ->order()
@@ -47,7 +63,7 @@ class Options implements Responsable
             ->get();
     }
 
-    private function value()
+    private function computeValue(): self
     {
         $this->value = $this->request->has('value')
             ? (array) $this->request->get('value')
@@ -56,96 +72,76 @@ class Options implements Responsable
         return $this;
     }
 
-    private function params()
+    private function applyParams(): self
     {
-        if (! $this->request->has('params')) {
-            return $this;
-        }
-
-        collect(json_decode($this->request->get('params')))
-            ->each(fn($value, $column) => (
-                $value === null
-                    ? $this->query->whereNull($column)
-                    : $this->query->whereIn($column, (array) $value)
-            ));
+        $this->params()->each(fn ($value, $column) => $this->query
+            ->when($value === null, fn ($query) => $query->whereNull($column))
+            ->when($value !== null, fn ($query) => $query->whereIn($column, (array) $value)));
 
         return $this;
     }
 
-    private function pivotParams()
+    private function applyPivotParams()
     {
-        if (! $this->request->has('pivotParams')) {
-            return $this;
-        }
-
-        collect(json_decode($this->request->get('pivotParams')))
-            ->each(fn($param, $relation) => (
-                $this->query->whereHas($relation, fn($query) => (
-                    collect($param)->each(fn($value, $attribute) => (
-                        $query->whereIn($attribute, (array) $value)
-                    ))
-                ))
-            ));
+        $this->pivotParams()->each(fn ($param, $relation) => $this->query
+            ->whereHas($relation, fn ($query) => (new Collection($param))
+                ->each(fn ($value, $attribute) => $query
+                    ->whereIn($attribute, (array) $value))));
 
         return $this;
     }
 
     private function selected()
     {
-        $query = clone $this->query;
-
-        $this->selected = $query->whereIn($this->trackBy, $this->value)->get();
+        $this->selected = (clone $this->query)
+            ->whereIn($this->trackBy, $this->value)
+            ->get();
 
         return $this;
     }
 
     private function search()
     {
-        if (! $this->request->filled('query')) {
-            return $this;
-        }
-
-        $this->searchArguments()->each(fn($argument) => (
-            $this->query->where(fn($query) => $this->matchArgument($query, $argument))
-        ));
+        $this->searchArguments()
+            ->each(fn ($argument) => $this->query->where(
+                fn ($query) => $this->matchArgument($query, $argument)
+            ));
 
         return $this;
     }
 
-    private function searchArguments()
-    {
-        return collect(explode(' ', $this->request->get('query')));
-    }
-
     private function matchArgument($query, $argument)
     {
-        collect($this->queryAttributes)->each(fn($attribute) => (
-            $query->orWhere(fn($query) => (
-                $this->matchAttribute($query, $attribute, $argument)
-            ))
+        $this->queryAttributes->each(fn ($attribute) => $query->orWhere(
+            fn ($query) => $this->matchAttribute(
+                $query, $attribute, $argument
+            )
         ));
     }
 
     private function matchAttribute($query, $attribute, $argument)
     {
-        $isNested = $this->isNested($attribute);
+        $nested = $this->isNested($attribute);
 
-        $query->when($isNested, function ($query) use ($attribute, $argument) {
-            $attributes = collect(explode('.', $attribute));
-
-            $query->whereHas($attributes->shift(), fn($query) => (
-                $this->matchAttribute($query, $attributes->implode('.'), $argument)
-            ));
-        })->when(! $isNested, fn($query) => (
-            $query->where(
-                $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
-            )
+        $query->when($nested, fn ($query) => $this->matchSegments(
+            $query, $attribute, $argument
+        ))->when(! $nested, fn ($query) => $query->where(
+            $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
         ));
+    }
+
+    private function matchSegments($query, $attribute, $argument)
+    {
+        $attributes = (new Collection(explode('.', $attribute)));
+
+        $query->whereHas($attributes->shift(), fn ($query) => $this->matchAttribute(
+            $query, $attributes->implode('.'), $argument)
+        );
     }
 
     private function order()
     {
-        $attribute = collect($this->queryAttributes)->first();
+        $attribute = $this->queryAttributes->first();
 
         if (! $this->isNested($attribute)) {
             $this->query->orderBy($attribute);
@@ -167,7 +163,24 @@ class Options implements Responsable
     private function get()
     {
         return $this->query->get()
-            ->merge($this->selected);
+            ->merge($this->selected)
+            ->when($this->appends, fn ($results) => $results->each
+                ->setAppends($this->appends));
+    }
+
+    private function params(): Collection
+    {
+        return new Collection(json_decode($this->request->get('params')));
+    }
+
+    private function pivotParams(): Collection
+    {
+        return new Collection(json_decode($this->request->get('pivotParams')));
+    }
+
+    private function searchArguments()
+    {
+        return new Collection(explode(' ', $this->request->get('query')));
     }
 
     private function isNested($attribute)
