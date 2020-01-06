@@ -81,7 +81,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function applyPivotParams()
+    private function applyPivotParams(): self
     {
         $this->pivotParams()->each(fn ($param, $relation) => $this->query
             ->whereHas($relation, fn ($query) => (new Collection($param))
@@ -91,7 +91,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function selected()
+    private function selected(): self
     {
         $this->selected = (clone $this->query)
             ->whereIn($this->trackBy, $this->value)
@@ -100,7 +100,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function search()
+    private function search(): self
     {
         $this->searchArguments()
             ->each(fn ($argument) => $this->query->where(
@@ -110,27 +110,24 @@ class Options implements Responsable
         return $this;
     }
 
-    private function matchArgument($query, $argument)
+    private function matchArgument(Builder $query, string $argument): void
     {
         $this->queryAttributes->each(fn ($attribute) => $query->orWhere(
-            fn ($query) => $this->matchAttribute(
-                $query, $attribute, $argument
-            )
+            fn ($query) => $this->matchAttribute($query, $attribute, $argument)
         ));
     }
 
-    private function matchAttribute($query, $attribute, $argument)
+    private function matchAttribute(Builder $query, string $attribute, string $argument)
     {
         $nested = $this->isNested($attribute);
 
-        $query->when($nested, fn ($query) => $this->matchSegments(
-            $query, $attribute, $argument
-        ))->when(! $nested, fn ($query) => $query->where(
-            $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
-        ));
+        $query->when($nested, fn ($query) => $this->matchSegments($query, $attribute, $argument))
+            ->when(! $nested, fn ($query) => $query->where(
+                $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
+            ));
     }
 
-    private function matchSegments($query, $attribute, $argument)
+    private function matchSegments(Builder $query, string $attribute, string $argument)
     {
         $attributes = (new Collection(explode('.', $attribute)));
 
@@ -139,7 +136,7 @@ class Options implements Responsable
         );
     }
 
-    private function order()
+    private function order(): self
     {
         $attribute = $this->queryAttributes->first();
 
@@ -150,7 +147,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function limit()
+    private function limit(): self
     {
         $limit = $this->request->get('paginate')
             ?? self::Limit - count($this->value);
@@ -160,7 +157,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function get()
+    private function get(): Collection
     {
         return $this->query->get()
             ->merge($this->selected)
@@ -178,12 +175,12 @@ class Options implements Responsable
         return new Collection(json_decode($this->request->get('pivotParams')));
     }
 
-    private function searchArguments()
+    private function searchArguments(): Collection
     {
         return new Collection(explode(' ', $this->request->get('query')));
     }
 
-    private function isNested($attribute)
+    private function isNested($attribute): bool
     {
         return Str::contains($attribute, '.');
     }

@@ -3,37 +3,34 @@
 namespace LaravelEnso\Select\app\Traits;
 
 use Illuminate\Http\Request;
-use LaravelEnso\Helpers\app\Classes\Obj;
 use LaravelEnso\Select\app\Services\Options;
 
 trait TypeaheadBuilder
 {
-    protected $request;
-
     public function __invoke(Request $request)
     {
-        $this->request = $this->convertRequest($request);
+        $this->convert($request);
 
         return (new Options(
             method_exists($this, 'query')
-                ? $this->query($this->request)
+                ? $this->query($request)
                 : $this->model::query(),
             $request->get('trackBy') ?? config('enso.select.trackBy'),
             $this->queryAttributes ?? config('enso.select.queryAttributes')
         ))->resource($this->resource ?? null)
-        ->appends($this->appends ?? null)
-        ->toResponse($this->request);
+        ->appends($this->appends ?? null);
     }
 
-    private function convertRequest(Request $request) //TODO review
+    private function convert(Request $request)
     {
         $params = json_decode($request->get('params'));
 
-        return new Obj([
-            'customParams' => json_encode(optional($params)->custom),
-            'pivotParams' => json_encode(optional($params)->pivot),
-            'query' => $request->get('query'),
-            'paginate' => $request->get('paginate'),
-        ]);
+        $request->replace(['params' => json_encode(optional($params)->params)])
+            ->merge([
+                'pivotParams' => json_encode(optional($params)->pivot),
+                'customParams' => json_encode(optional($params)->custom),
+                'query' => $request->get('query'),
+                'paginate' => $request->get('paginate'),
+            ]);
     }
 }
