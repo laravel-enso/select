@@ -1,9 +1,9 @@
 <?php
 
-namespace LaravelEnso\Select\app\Traits;
+namespace LaravelEnso\Select\App\Traits;
 
 use Illuminate\Http\Request;
-use LaravelEnso\Select\app\Services\Options;
+use LaravelEnso\Select\App\Services\Options;
 
 trait TypeaheadBuilder
 {
