@@ -18,19 +18,19 @@ trait TypeaheadBuilder
             $request->get('trackBy') ?? config('enso.select.trackBy'),
             $this->queryAttributes ?? config('enso.select.queryAttributes')
         ))->resource($this->resource ?? null)
-        ->appends($this->appends ?? null);
+            ->appends($this->appends ?? null);
     }
 
     private function convert(Request $request)
     {
         $params = json_decode($request->get('params'));
 
-        $request->replace(['params' => json_encode(optional($params)->params)])
-            ->merge([
-                'pivotParams' => json_encode(optional($params)->pivot),
-                'customParams' => json_encode(optional($params)->custom),
-                'query' => $request->get('query'),
-                'paginate' => $request->get('paginate'),
-            ]);
+        $request->replace([
+            'query' => $request->get('query'),
+            'params' => json_encode(optional($params)->params),
+            'paginate' => $request->get('paginate'),
+            'pivotParams' => json_encode(optional($params)->pivot),
+            'customParams' => json_encode(optional($params)->custom),
+        ]);
     }
 }
