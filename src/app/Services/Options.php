@@ -123,7 +123,9 @@ class Options implements Responsable
 
         $query->when($nested, fn ($query) => $this->matchSegments($query, $attribute, $argument))
             ->when(! $nested, fn ($query) => $query->where(
-                $attribute, config('enso.select.comparisonOperator'), '%'.$argument.'%'
+                $attribute,
+                config('enso.select.comparisonOperator'),
+                '%'.$argument.'%'
             ));
     }
 
@@ -131,8 +133,13 @@ class Options implements Responsable
     {
         $attributes = (new Collection(explode('.', $attribute)));
 
-        $query->whereHas($attributes->shift(), fn ($query) => $this->matchAttribute(
-            $query, $attributes->implode('.'), $argument)
+        $query->whereHas(
+            $attributes->shift(),
+            fn ($query) => $this->matchAttribute(
+                $query,
+                $attributes->implode('.'),
+                $argument
+            )
         );
     }
 
@@ -177,7 +184,7 @@ class Options implements Responsable
 
     private function searchArguments(): Collection
     {
-        return new Collection(explode(' ', $this->request->get('query')));
+        return (new Collection(explode(' ', $this->request->get('query'))))->filter();
     }
 
     private function isNested($attribute): bool
