@@ -18,6 +18,7 @@ class Options implements Responsable
     private Request $request;
     private Collection $selected;
     private array $value;
+    private ?string $orderBy;
     private ?string $resource;
     private ?array $appends;
 
@@ -53,7 +54,7 @@ class Options implements Responsable
 
     private function data(): Collection
     {
-        return $this->computeValue()
+        return $this->init()
             ->applyParams()
             ->applyPivotParams()
             ->selected()
@@ -63,11 +64,14 @@ class Options implements Responsable
             ->get();
     }
 
-    private function computeValue(): self
+    private function init(): self
     {
         $this->value = $this->request->has('value')
             ? (array) $this->request->get('value')
             : [];
+
+        $attribute = $this->queryAttributes->first();
+        $this->orderBy = $this->isNested($attribute) ? null : $attribute;
 
         return $this;
     }
@@ -145,11 +149,10 @@ class Options implements Responsable
 
     private function order(): self
     {
-        $attribute = $this->queryAttributes->first();
-
-        if (! $this->isNested($attribute)) {
-            $this->query->orderBy($attribute);
-        }
+        $this->query->when(
+            $this->orderBy !== null,
+            fn ($query) => $query->orderBy($this->orderBy)
+        );
 
         return $this;
     }
@@ -157,7 +160,7 @@ class Options implements Responsable
     private function limit(): self
     {
         $limit = $this->request->get('paginate')
-            ?? self::Limit - count($this->value);
+            ?? self::Limit;
 
         $this->query->limit($limit);
 
@@ -166,8 +169,11 @@ class Options implements Responsable
 
     private function get(): Collection
     {
-        return $this->query->get()
+        return $this->query->whereNotIn($this->trackBy, $this->value)
+            ->get()
             ->merge($this->selected)
+            ->when($this->orderBy !== null, fn ($results) => $results->sortBy($this->orderBy))
+            ->values()
             ->when($this->appends, fn ($results) => $results->each
                 ->setAppends($this->appends));
     }

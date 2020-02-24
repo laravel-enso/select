@@ -16,6 +16,6 @@ trait OptionsBuilder
             $request->get('trackBy') ?? config('enso.select.trackBy'),
             $this->queryAttributes ?? config('enso.select.queryAttributes')
         ))->resource($this->resource ?? null)
-        ->appends($this->appends ?? null);
+            ->appends($this->appends ?? null);
     }
 }
