@@ -32,4 +32,15 @@ return [
     */
 
     'comparisonOperator' => 'LIKE',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Mode
+    |--------------------------------------------------------------------------
+    | Controls the global way in which wildcards are used in the query.
+    | Can be customized for each select.
+    | Possible values for search mode: 'full', 'startsWith', 'endsWith'
+    */
+
+    'searchMode' => 'full',
 ];

@@ -6,7 +6,9 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use LaravelEnso\Select\App\Exceptions\Query;
 
 class Options implements Responsable
 {
@@ -18,6 +20,7 @@ class Options implements Responsable
     private Request $request;
     private Collection $selected;
     private array $value;
+    private string $searchMode;
     private ?string $orderBy;
     private ?string $resource;
     private ?array $appends;
@@ -36,6 +39,13 @@ class Options implements Responsable
         return $this->resource
             ? $this->resource::collection($this->data())
             : $this->data();
+    }
+
+    public function searchMode(string $searchMode): self
+    {
+        $this->searchMode = $searchMode;
+
+        return $this;
     }
 
     public function resource(?string $resource): self
@@ -128,8 +138,8 @@ class Options implements Responsable
         $query->when($nested, fn ($query) => $this->matchSegments($query, $attribute, $argument))
             ->when(! $nested, fn ($query) => $query->where(
                 $attribute,
-                config('enso.select.comparisonOperator'),
-                '%'.$argument.'%'
+                Config::get('enso.select.comparisonOperator'),
+                $this->wildcards($argument)
             ));
     }
 
@@ -137,14 +147,22 @@ class Options implements Responsable
     {
         $attributes = (new Collection(explode('.', $attribute)));
 
-        $query->whereHas(
-            $attributes->shift(),
-            fn ($query) => $this->matchAttribute(
-                $query,
-                $attributes->implode('.'),
-                $argument
-            )
-        );
+        $query->whereHas($attributes->shift(), fn ($query) => $this
+            ->matchAttribute($query, $attributes->implode('.'), $argument));
+    }
+
+    private function wildcards(string $argument): string
+    {
+        switch ($this->searchMode) {
+            case 'full':
+                return '%'.$argument.'%';
+            case 'startsWith':
+                return $argument.'%';
+            case 'endsWith':
+                return '%'.$argument;
+            default:
+                throw Query::unknownSearchMode();
+        }
     }
 
     private function order(): self
@@ -190,7 +208,9 @@ class Options implements Responsable
 
     private function searchArguments(): Collection
     {
-        return (new Collection(explode(' ', $this->request->get('query'))))->filter();
+        return $this->searchMode === 'full'
+            ? (new Collection(explode(' ', $this->request->get('query'))))->filter()
+            : (new Collection($this->request->get('query')));
     }
 
     private function isNested($attribute): bool
