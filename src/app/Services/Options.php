@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use LaravelEnso\Select\App\Exceptions\Query;
+use LaravelEnso\Filters\App\Services\Search;
 
 class Options implements Responsable
 {
@@ -116,69 +116,45 @@ class Options implements Responsable
 
     private function search(): self
     {
-        $this->searchArguments()
-            ->each(fn ($argument) => $this->query->where(
-                fn ($query) => $this->matchArgument($query, $argument)
-            ));
+        $search = $this->request->get('query');
+
+        if (! $search) {
+            return $this;
+        }
+
+        (new Search($this->query, $this->attributes(), $search))
+            ->relations($this->relations())
+            ->searchMode($this->searchMode)
+            ->comparisonOperator(Config::get('enso.select.comparisonOperator'))
+            ->handle();
 
         return $this;
     }
 
-    private function matchArgument(Builder $query, string $argument): void
+    private function attributes(): array
     {
-        $this->queryAttributes->each(fn ($attribute) => $query->orWhere(
-            fn ($query) => $this->matchAttribute($query, $attribute, $argument)
-        ));
+        return $this->queryAttributes
+            ->reject(fn ($attribute) => $this->isNested($attribute))
+            ->toArray();
     }
 
-    private function matchAttribute(Builder $query, string $attribute, string $argument)
+    private function relations(): array
     {
-        $nested = $this->isNested($attribute);
-
-        $query->when($nested, fn ($query) => $this->matchSegments($query, $attribute, $argument))
-            ->when(! $nested, fn ($query) => $query->where(
-                $attribute,
-                Config::get('enso.select.comparisonOperator'),
-                $this->wildcards($argument)
-            ));
-    }
-
-    private function matchSegments(Builder $query, string $attribute, string $argument)
-    {
-        $attributes = (new Collection(explode('.', $attribute)));
-
-        $query->whereHas($attributes->shift(), fn ($query) => $this
-            ->matchAttribute($query, $attributes->implode('.'), $argument));
-    }
-
-    private function wildcards(string $argument): string
-    {
-        switch ($this->searchMode) {
-            case 'full':
-                return '%'.$argument.'%';
-            case 'startsWith':
-                return $argument.'%';
-            case 'endsWith':
-                return '%'.$argument;
-            default:
-                throw Query::unknownSearchMode();
-        }
+        return $this->queryAttributes
+            ->filter(fn ($attribute) => $this->isNested($attribute))
+            ->toArray();
     }
 
     private function order(): self
     {
-        $this->query->when(
-            $this->orderBy !== null,
-            fn ($query) => $query->orderBy($this->orderBy)
-        );
+        $this->query->when($this->orderBy, fn ($query) => $query->orderBy($this->orderBy));
 
         return $this;
     }
 
     private function limit(): self
     {
-        $limit = $this->request->get('paginate')
-            ?? self::Limit;
+        $limit = $this->request->get('paginate') ?? self::Limit;
 
         $this->query->limit($limit);
 
@@ -187,13 +163,11 @@ class Options implements Responsable
 
     private function get(): Collection
     {
-        return $this->query->whereNotIn($this->trackBy, $this->value)
-            ->get()
+        return $this->query->whereNotIn($this->trackBy, $this->value)->get()
             ->merge($this->selected)
             ->when($this->orderBy !== null, fn ($results) => $results->sortBy($this->orderBy))
             ->values()
-            ->when($this->appends, fn ($results) => $results->each
-                ->setAppends($this->appends));
+            ->when($this->appends, fn ($results) => $results->each->setAppends($this->appends));
     }
 
     private function params(): Collection
@@ -204,13 +178,6 @@ class Options implements Responsable
     private function pivotParams(): Collection
     {
         return new Collection(json_decode($this->request->get('pivotParams')));
-    }
-
-    private function searchArguments(): Collection
-    {
-        return $this->searchMode === 'full'
-            ? (new Collection(explode(' ', $this->request->get('query'))))->filter()
-            : (new Collection($this->request->get('query')));
     }
 
     private function isNested($attribute): bool
