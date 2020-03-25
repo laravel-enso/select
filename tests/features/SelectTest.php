@@ -1,4 +1,5 @@
 <?php
+
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -21,8 +22,6 @@ class SelectTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        // $this->withoutExceptionHandling();
 
         $this->faker = Factory::create();
 
@@ -63,7 +62,7 @@ class SelectTest extends TestCase
     public function can_get_empty_options_with_restricting_pivot_params()
     {
         $response = $this->requestResponse([
-            'pivotParams' => ['relation' => ['id' => 0]]
+            'pivotParams' => ['relation' => ['id' => 0]],
         ]);
 
         $this->assertCount(0, $response);
@@ -106,7 +105,7 @@ class SelectTest extends TestCase
     public function can_get_options_with_param()
     {
         $response = $this->requestResponse([
-            'params' => ['email' => $this->testModel->email]
+            'params' => ['email' => $this->testModel->email],
         ]);
 
         $this->assertTrue($this->whithinResponse($response));
@@ -116,7 +115,7 @@ class SelectTest extends TestCase
     public function can_get_options_with_pivot_params()
     {
         $response = $this->requestResponse([
-            'pivotParams' => ['relation' => ['name' => $this->testModel->relation->name]]
+            'pivotParams' => ['relation' => ['name' => $this->testModel->relation->name]],
         ]);
 
         $this->assertTrue($this->whithinResponse($response));
@@ -166,7 +165,7 @@ class SelectTest extends TestCase
         $request = new Request();
 
         (new Collection($params))->each(fn ($value, $key) => $request->merge([
-            $key => is_array($value) ? json_encode($value) : $value
+            $key => is_array($value) ? json_encode($value) : $value,
         ]));
 
         return new Collection(
