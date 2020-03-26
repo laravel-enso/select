@@ -9,27 +9,33 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use LaravelEnso\Filters\App\Services\Search;
+use LaravelEnso\Helpers\App\Traits\When;
 
 class Options implements Responsable
 {
+    use When;
+
     private const Limit = 100;
 
     private Builder $query;
     private string $trackBy;
     private Collection $queryAttributes;
+    private string $searchMode;
+    private ?string $resource;
+    private ?array $appends;
     private Request $request;
     private Collection $selected;
     private array $value;
-    private string $searchMode;
     private ?string $orderBy;
-    private ?string $resource;
-    private ?array $appends;
 
-    public function __construct(Builder $query, string $trackBy, array $queryAttributes)
+    public function __construct(Builder $query)
     {
         $this->query = $query;
-        $this->trackBy = $trackBy;
-        $this->queryAttributes = new Collection($queryAttributes);
+        $this->trackBy = Config::get('enso.select.trackBy');
+        $this->queryAttributes = new Collection(Config::get('enso.select.queryAttributes'));
+        $this->searchMode = Config::get('enso.select.searchMode');
+        $this->resource = null;
+        $this->appends = null;
     }
 
     public function toResponse($request)
@@ -39,6 +45,20 @@ class Options implements Responsable
         return $this->resource
             ? $this->resource::collection($this->data())
             : $this->data();
+    }
+
+    public function trackBy(string $trackBy): self
+    {
+        $this->trackBy = $trackBy;
+
+        return $this;
+    }
+
+    public function queryAttributes(array $queryAttributes): self
+    {
+        $this->queryAttributes = new Collection($queryAttributes);
+
+        return $this;
     }
 
     public function searchMode(string $searchMode): self

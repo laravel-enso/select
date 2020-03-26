@@ -3,22 +3,16 @@
 namespace LaravelEnso\Select\App\Traits;
 
 use Illuminate\Http\Request;
-use LaravelEnso\Select\App\Services\Options;
 
 trait TypeaheadBuilder
 {
+    use OptionsBuilder;
+
     public function __invoke(Request $request)
     {
         $this->convert($request);
 
-        return (new Options(
-            method_exists($this, 'query')
-                ? $this->query($request)
-                : $this->model::query(),
-            $request->get('trackBy') ?? config('enso.select.trackBy'),
-            $this->queryAttributes ?? config('enso.select.queryAttributes')
-        ))->resource($this->resource ?? null)
-            ->appends($this->appends ?? null);
+        return $this->response($request);
     }
 
     private function convert(Request $request)
@@ -27,8 +21,9 @@ trait TypeaheadBuilder
 
         $request->replace([
             'query' => $request->get('query'),
-            'params' => json_encode(optional($params)->params),
             'paginate' => $request->get('paginate'),
+            'params' => json_encode(optional($params)->params),
+            'searchMode' => $request->get('searchMode'),
             'pivotParams' => json_encode(optional($params)->pivot),
             'customParams' => json_encode(optional($params)->custom),
         ]);
