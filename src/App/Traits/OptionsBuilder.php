@@ -3,6 +3,7 @@
 namespace LaravelEnso\Select\App\Traits;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use LaravelEnso\Select\App\Services\Options;
 
 trait OptionsBuilder
@@ -14,7 +15,7 @@ trait OptionsBuilder
 
     private function response(Request $request)
     {
-        $query = method_exists($this, 'query') ? $this->query($request) : $this->model::query();
+        $query = method_exists($this, 'query') ? $this->query($request) : App::make($this->model)::query();
 
         return (new Options($query))
             ->when($request->has('trackBy'), fn ($options) => $options->trackBy($request->get('trackBy')))

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use LaravelEnso\Filters\App\Services\Search;
@@ -43,7 +44,7 @@ class Options implements Responsable
         $this->request = $request;
 
         return $this->resource
-            ? $this->resource::collection($this->data())
+            ? App::make($this->resource, ['resource' => null])::collection($this->data())
             : $this->data();
     }
 
