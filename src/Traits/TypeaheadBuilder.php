@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelEnso\Select\App\Traits;
+namespace LaravelEnso\Select\Traits;
 
 use Illuminate\Http\Request;
 

@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function load()
     {
-        $this->mergeConfigFrom(__DIR__.'/config/select.php', 'enso.select');
+        $this->mergeConfigFrom(__DIR__.'/../config/select.php', 'enso.select');
 
         return $this;
     }

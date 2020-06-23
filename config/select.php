@@ -1,7 +1,7 @@
 <?php
 
-use LaravelEnso\Filters\App\Enums\ComparisonOperators;
-use LaravelEnso\Filters\App\Enums\SearchModes;
+use LaravelEnso\Filters\Enums\ComparisonOperators;
+use LaravelEnso\Filters\Enums\SearchModes;
 
 return [
     /*

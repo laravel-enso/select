@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelEnso\Select\App\Traits;
+namespace LaravelEnso\Select\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use LaravelEnso\Select\App\Services\Options;
+use LaravelEnso\Select\Services\Options;
 
 trait OptionsBuilder
 {

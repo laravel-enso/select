@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
-use LaravelEnso\Select\App\Traits\OptionsBuilder;
+use LaravelEnso\Select\Traits\OptionsBuilder;
 use Tests\TestCase;
 
 class SelectTest extends TestCase
