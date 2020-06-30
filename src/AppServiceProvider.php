@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     private function publish()
     {
         $this->publishes([
-            __DIR__.'/config' => config_path('enso'),
+            __DIR__.'/../config' => config_path('enso'),
         ], ['select-config', 'enso-config']);
     }
 }
