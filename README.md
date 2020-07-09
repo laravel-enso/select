@@ -1,6 +1,6 @@
 # Select
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c6799b0705d34fdab5cd100e7cfe6312)](https://www.codacy.com/app/laravel-enso/select?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=laravel-enso/select&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7925de362eed457fb55996828e30a5d8)](https://www.codacy.com/gh/laravel-enso/select?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=laravel-enso/select&amp;utm_campaign=Badge_Grade) 
 [![StyleCI](https://github.styleci.io/repos/85489940/shield?branch=master)](https://github.styleci.io/repos/85489940)
 [![License](https://poser.pugx.org/laravel-enso/select/license)](https://packagist.org/packages/laravel-enso/select)
 [![Total Downloads](https://poser.pugx.org/laravel-enso/select/downloads)](https://packagist.org/packages/laravel-enso/select)
