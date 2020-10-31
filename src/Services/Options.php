@@ -185,6 +185,7 @@ class Options implements Responsable
     private function get(): Collection
     {
         return $this->query->whereNotIn($this->trackBy, $this->value)->get()
+            ->toBase()
             ->merge($this->selected)
             ->when($this->orderBy !== null, fn ($results) => $results->sortBy($this->orderBy))
             ->values()
