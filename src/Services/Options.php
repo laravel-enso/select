@@ -18,7 +18,6 @@ class Options implements Responsable
 
     private const Limit = 100;
 
-    private Builder $query;
     private string $trackBy;
     private Collection $queryAttributes;
     private string $searchMode;
@@ -29,9 +28,8 @@ class Options implements Responsable
     private array $value;
     private ?string $orderBy;
 
-    public function __construct(Builder $query)
+    public function __construct(private Builder $query)
     {
-        $this->query = $query;
         $this->trackBy = Config::get('enso.select.trackBy');
         $this->queryAttributes = new Collection(Config::get('enso.select.queryAttributes'));
         $this->searchMode = Config::get('enso.select.searchMode');
@@ -119,7 +117,7 @@ class Options implements Responsable
     private function applyPivotParams(): self
     {
         $this->pivotParams()->each(fn ($param, $relation) => $this->query
-            ->whereHas($relation, fn ($query) => (new Collection($param))
+            ->whereHas($relation, fn ($query) => Collection::wrap($param)
                 ->each(fn ($value, $attribute) => $query
                     ->whereIn($attribute, (array) $value))));
 
@@ -194,12 +192,12 @@ class Options implements Responsable
 
     private function params(): Collection
     {
-        return new Collection(json_decode($this->request->get('params')));
+        return new Collection(json_decode($this->request->get('params'), true));
     }
 
     private function pivotParams(): Collection
     {
-        return new Collection(json_decode($this->request->get('pivotParams')));
+        return new Collection(json_decode($this->request->get('pivotParams'), true));
     }
 
     private function isNested($attribute): bool

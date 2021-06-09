@@ -22,10 +22,10 @@ trait TypeaheadBuilder
         $request->replace([
             'query' => $request->get('query'),
             'paginate' => $request->get('paginate'),
-            'params' => json_encode(optional($params)->params),
+            'params' => json_encode($params?->params),
             'searchMode' => $request->get('searchMode'),
-            'pivotParams' => json_encode(optional($params)->pivot),
-            'customParams' => json_encode(optional($params)->custom),
+            'pivotParams' => json_encode($params?->pivot),
+            'customParams' => json_encode($params?->custom),
         ]);
     }
 }

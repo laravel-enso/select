@@ -156,6 +156,8 @@ class SelectTest extends TestCase
 
     private function whithinResponse($response)
     {
+        \Log::info($response);
+
         return $response->pluck('email')
             ->contains($this->testModel->email);
     }
@@ -164,7 +166,7 @@ class SelectTest extends TestCase
     {
         $request = new Request();
 
-        (new Collection($params))->each(fn ($value, $key) => $request->merge([
+        Collection::wrap($params)->each(fn ($value, $key) => $request->merge([
             $key => is_array($value) ? json_encode($value) : $value,
         ]));
 
