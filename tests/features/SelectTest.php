@@ -156,8 +156,6 @@ class SelectTest extends TestCase
 
     private function whithinResponse($response)
     {
-        \Log::info($response);
-
         return $response->pluck('email')
             ->contains($this->testModel->email);
     }
