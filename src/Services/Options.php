@@ -185,7 +185,8 @@ class Options implements Responsable
         return $this->query->whereNotIn($this->trackBy, $this->value)->get()
             ->toBase()
             ->merge($this->selected)
-            ->when($this->orderBy !== null, fn ($results) => $results->sortBy($this->orderBy))
+            ->when($this->orderBy !== null, fn ($results) => $results
+                ->sortBy($this->orderBy, Config::get('enso.select.sortByOptions')))
             ->values()
             ->when($this->appends, fn ($results) => $results->each->setAppends($this->appends));
     }
