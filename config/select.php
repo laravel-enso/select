@@ -51,8 +51,8 @@ return [
     |--------------------------------------------------------------------------
     | Sort By Options
     |--------------------------------------------------------------------------
-    | The sort by options used for every select. 
-    | Possible options are SORT_REGULAR, SORT_NUMERIC, SORT_STRING, 
+    | The sort by options used for every select.
+    | Possible options are SORT_REGULAR, SORT_NUMERIC, SORT_STRING,
     | SORT_NATURAL, SORT_FLAG_CASE, ...
     | Ex : Case-insensitive sorting : SORT_NATURAL|SORT_FLAG_CASE
     | @link https://php.net/manual/en/array.constants.php
