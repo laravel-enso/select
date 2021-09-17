@@ -17,7 +17,7 @@ trait OptionsBuilder
     {
         $query = method_exists($this, 'query') ? $this->query($request) : App::make($this->model)::query();
 
-        return (App::makeWith(Options::class, ['query' => $query]))
+        return (App::make(Options::class, ['query' => $query]))
             ->when($request->has('trackBy'), fn ($options) => $options->trackBy($request->get('trackBy')))
             ->when($request->has('searchMode'), fn ($options) => $options->searchMode($request->get('searchMode')))
             ->when(isset($this->queryAttributes), fn ($options) => $options->queryAttributes($this->queryAttributes))
