@@ -16,19 +16,19 @@ class Options implements Responsable
 {
     use When;
 
-    private const Limit = 100;
+    protected const Limit = 100;
 
-    private string $trackBy;
-    private Collection $queryAttributes;
-    private string $searchMode;
-    private ?string $resource;
-    private ?array $appends;
-    private Request $request;
-    private Collection $selected;
-    private array $value;
-    private ?string $orderBy;
+    protected string $trackBy;
+    protected Collection $queryAttributes;
+    protected string $searchMode;
+    protected ?string $resource;
+    protected ?array $appends;
+    protected Request $request;
+    protected Collection $selected;
+    protected array $value;
+    protected ?string $orderBy;
 
-    public function __construct(private Builder $query)
+    public function __construct(protected Builder $query)
     {
         $this->trackBy = Config::get('enso.select.trackBy');
         $this->queryAttributes = new Collection(Config::get('enso.select.queryAttributes'));
@@ -81,7 +81,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function data(): Collection
+    protected function data(): Collection
     {
         return $this->init()
             ->applyParams()
@@ -93,7 +93,7 @@ class Options implements Responsable
             ->get();
     }
 
-    private function init(): self
+    protected function init(): self
     {
         $this->value = $this->request->has('value')
             ? (array) $this->request->get('value')
@@ -105,7 +105,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function applyParams(): self
+    protected function applyParams(): self
     {
         $this->params()->each(fn ($value, $column) => $this->query
             ->when($value === null, fn ($query) => $query->whereNull($column))
@@ -114,7 +114,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function applyPivotParams(): self
+    protected function applyPivotParams(): self
     {
         $this->pivotParams()->each(fn ($param, $relation) => $this->query
             ->whereHas($relation, fn ($query) => Collection::wrap($param)
@@ -124,7 +124,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function selected(): self
+    protected function selected(): self
     {
         $this->selected = (clone $this->query)
             ->whereIn($this->trackBy, $this->value)
@@ -133,7 +133,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function search(): self
+    protected function search(): self
     {
         $search = $this->request->get('query');
 
@@ -150,28 +150,28 @@ class Options implements Responsable
         return $this;
     }
 
-    private function attributes(): array
+    protected function attributes(): array
     {
         return $this->queryAttributes
             ->reject(fn ($attribute) => $this->isNested($attribute))
             ->toArray();
     }
 
-    private function relations(): array
+    protected function relations(): array
     {
         return $this->queryAttributes
             ->filter(fn ($attribute) => $this->isNested($attribute))
             ->toArray();
     }
 
-    private function order(): self
+    protected function order(): self
     {
         $this->query->when($this->orderBy, fn ($query) => $query->orderBy($this->orderBy));
 
         return $this;
     }
 
-    private function limit(): self
+    protected function limit(): self
     {
         $limit = $this->request->get('paginate') ?? self::Limit;
 
@@ -180,7 +180,7 @@ class Options implements Responsable
         return $this;
     }
 
-    private function get(): Collection
+    protected function get(): Collection
     {
         return $this->query->whereNotIn($this->trackBy, $this->value)->get()
             ->toBase()
@@ -191,17 +191,17 @@ class Options implements Responsable
             ->when($this->appends, fn ($results) => $results->each->setAppends($this->appends));
     }
 
-    private function params(): Collection
+    protected function params(): Collection
     {
         return new Collection(json_decode($this->request->get('params'), true));
     }
 
-    private function pivotParams(): Collection
+    protected function pivotParams(): Collection
     {
         return new Collection(json_decode($this->request->get('pivotParams'), true));
     }
 
-    private function isNested($attribute): bool
+    protected function isNested($attribute): bool
     {
         return Str::contains($attribute, '.');
     }
