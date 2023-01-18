@@ -1,7 +1,7 @@
 <?php
 
-use LaravelEnso\Filters\Enums\ComparisonOperators;
-use LaravelEnso\Filters\Enums\SearchModes;
+use LaravelEnso\Filters\Enums\ComparisonOperator;
+use LaravelEnso\Filters\Enums\SearchMode;
 
 return [
     /*
@@ -34,7 +34,7 @@ return [
     | Possible values for comparison operator: LIKE, ILIKE
     */
 
-    'comparisonOperator' => ComparisonOperators::Like,
+    'comparisonOperator' => ComparisonOperator::Like,
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return [
     | SearchModes::Full, SearchModes::StartsWith, SearchModes::EndsWith
     */
 
-    'searchMode' => SearchModes::Full,
+    'searchMode' => SearchMode::Full,
 
     /*
     |--------------------------------------------------------------------------

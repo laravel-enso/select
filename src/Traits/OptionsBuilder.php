@@ -4,6 +4,7 @@ namespace LaravelEnso\Select\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use LaravelEnso\Filters\Enums\SearchMode;
 use LaravelEnso\Select\Services\Options;
 
 trait OptionsBuilder
@@ -16,10 +17,11 @@ trait OptionsBuilder
     private function response(Request $request)
     {
         $query = method_exists($this, 'query') ? $this->query($request) : App::make($this->model)::query();
+        $searchMode = SearchMode::from($request->get('searchMode'));
 
-        return (App::make(Options::class, ['query' => $query]))
+        return App::make(Options::class, ['query' => $query])
             ->when($request->has('trackBy'), fn ($options) => $options->trackBy($request->get('trackBy')))
-            ->when($request->has('searchMode'), fn ($options) => $options->searchMode($request->get('searchMode')))
+            ->when($request->has('searchMode'), fn ($options) => $options->searchMode($searchMode))
             ->when(isset($this->queryAttributes), fn ($options) => $options->queryAttributes($this->queryAttributes))
             ->when(isset($this->resource), fn ($options) => $options->resource($this->resource))
             ->when(isset($this->appends), fn ($options) => $options->appends($this->appends));

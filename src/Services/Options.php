@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use LaravelEnso\Filters\Enums\SearchMode;
 use LaravelEnso\Filters\Services\Search;
 use LaravelEnso\Helpers\Traits\When;
 
@@ -20,7 +21,7 @@ class Options implements Responsable
 
     private string $trackBy;
     private Collection $queryAttributes;
-    private string $searchMode;
+    private SearchMode $searchMode;
     private ?string $resource;
     private ?array $appends;
     private Request $request;
@@ -60,7 +61,7 @@ class Options implements Responsable
         return $this;
     }
 
-    public function searchMode(string $searchMode): self
+    public function searchMode(SearchMode $searchMode): self
     {
         $this->searchMode = $searchMode;
 
