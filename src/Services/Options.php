@@ -107,9 +107,11 @@ class Options implements Responsable
 
     private function applyParams(): self
     {
-        $this->params()->each(fn ($value, $column) => $this->query
-            ->when($value === null, fn ($query) => $query->whereNull($column))
-            ->when($value !== null, fn ($query) => $query->whereIn($column, (array) $value)));
+        $this->params()->each(fn ($value, $column) => $this->query->when(
+            $value === null,
+            fn ($query) => $query->whereNull($column),
+            fn ($query) => $query->whereIn($column, (array) $value)
+        ));
 
         return $this;
     }
@@ -118,8 +120,11 @@ class Options implements Responsable
     {
         $this->pivotParams()->each(fn ($param, $relation) => $this->query
             ->whereHas($relation, fn ($query) => Collection::wrap($param)
-                ->each(fn ($value, $attribute) => $query
-                    ->whereIn($attribute, (array) $value))));
+                ->each(fn ($value, $attribute) => $query->when(
+                    $value === null,
+                    fn ($query) => $query->whereNull($attribute),
+                    fn ($query) => $query->whereIn($attribute, (array) $value)
+                ))));
 
         return $this;
     }
@@ -137,7 +142,7 @@ class Options implements Responsable
     {
         $search = $this->request->get('query');
 
-        if (! $search) {
+        if (!$search) {
             return $this;
         }
 
