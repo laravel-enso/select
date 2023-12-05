@@ -9,12 +9,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Conditionable;
 use LaravelEnso\Filters\Services\Search;
-use LaravelEnso\Helpers\Traits\When;
 
 class Options implements Responsable
 {
-    use When;
+    use Conditionable;
 
     private const Limit = 100;
 
