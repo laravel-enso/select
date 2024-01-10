@@ -142,7 +142,7 @@ class Options implements Responsable
     {
         $search = $this->request->get('query');
 
-        if (!$search) {
+        if (! $search) {
             return $this;
         }
 
