@@ -137,8 +137,9 @@ class SelectTest extends TestCase
         $response = $this->requestResponse();
 
         $this->assertCount(SelectTestModel::count(), $response);
+
         $this->assertTrue(
-            $response->pluck('resource')->contains('resource')
+            $response->first()->resolve()['resource'] === 'resource'
         );
     }
 
