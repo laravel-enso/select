@@ -107,11 +107,8 @@ class Options implements Responsable
 
     private function applyParams(): self
     {
-        $this->params()->each(fn ($value, $column) => $this->query->when(
-            $value === null,
-            fn ($query) => $query->whereNull($column),
-            fn ($query) => $query->whereIn($column, (array) $value)
-        ));
+        $this->params()->each(fn ($value, $column) => $this->query
+            ->whereIn($column, (array) $value));
 
         return $this;
     }
@@ -119,11 +116,8 @@ class Options implements Responsable
     private function applyPivotParams(): self
     {
         $this->pivotParams()->each(fn ($value, $relation) => $this->query
-            ->whereHas(Str::beforeLast($relation, '.'), fn ($query) => $query->when(
-                $value === null,
-                fn ($query) => $query->whereNull(Str::afterLast($relation, '.')),
-                fn ($query) => $query->whereIn(Str::afterLast($relation, '.'), (array) $value)
-            )));
+            ->whereHas(Str::beforeLast($relation, '.'), fn ($query) => $query
+                ->whereIn(Str::afterLast($relation, '.'), (array) $value)));
 
         return $this;
     }
@@ -202,8 +196,9 @@ class Options implements Responsable
 
     private function pivotParams(): Collection
     {
-        return Collection::wrap(json_decode($this->request->get('pivotParams'), true))
-            ->dot();
+        $params = json_decode($this->request->get('pivotParams'), true);
+
+        return Collection::wrap($params)->dot()->filter();
     }
 
     private function isNested($attribute): bool
