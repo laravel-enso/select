@@ -198,7 +198,8 @@ class Options implements Responsable
     {
         $params = json_decode($this->request->get('pivotParams'), true);
 
-        return Collection::wrap($params)->dot()->filter();
+        return Collection::wrap($params)->dot()
+            ->filter(fn ($value) => $value !== null);
     }
 
     private function isNested($attribute): bool
