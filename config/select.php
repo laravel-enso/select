@@ -1,7 +1,7 @@
 <?php
 
-use LaravelEnso\Filters\Enums\ComparisonOperators;
-use LaravelEnso\Filters\Enums\SearchModes;
+use LaravelEnso\Filters\Enums\ComparisonOperator;
+use LaravelEnso\Filters\Enums\SearchMode;
 
 return [
     /*
@@ -34,7 +34,7 @@ return [
     | Possible values for comparison operator: LIKE, ILIKE
     */
 
-    'comparisonOperator' => ComparisonOperators::Like,
+    'comparisonOperator' => ComparisonOperator::Like->value,
 
     /*
     |--------------------------------------------------------------------------
@@ -42,10 +42,10 @@ return [
     |--------------------------------------------------------------------------
     | Controls the global way in which wildcards are used in the query.
     | Can be customized for each select. Possible values for search mode:
-    | SearchModes::Full, SearchModes::StartsWith, SearchModes::EndsWith
+    | SearchMode::Full, SearchMode::StartsWith, SearchMode::EndsWith
     */
 
-    'searchMode' => SearchModes::Full,
+    'searchMode' => SearchMode::Full->value,
 
     /*
     |--------------------------------------------------------------------------
