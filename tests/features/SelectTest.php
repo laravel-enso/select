@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use LaravelEnso\Select\Traits\OptionsBuilder;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class SelectTest extends TestCase
 {
@@ -33,7 +34,7 @@ class SelectTest extends TestCase
         $this->createRelation();
     }
 
-    /** @test */
+    #[Test]
     public function can_get_options_without_filters()
     {
         $response = $this->requestResponse();
@@ -42,7 +43,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_get_empty_options_with_restricting_query()
     {
         $response = $this->requestResponse(['query' => 'NO_VALUE']);
@@ -50,7 +51,7 @@ class SelectTest extends TestCase
         $this->assertCount(0, $response);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_empty_options_with_restricting_params()
     {
         $response = $this->requestResponse(['params' => ['id' => 0]]);
@@ -58,7 +59,7 @@ class SelectTest extends TestCase
         $this->assertCount(0, $response);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_empty_options_with_restricting_pivot_params()
     {
         $response = $this->requestResponse([
@@ -68,7 +69,7 @@ class SelectTest extends TestCase
         $this->assertCount(0, $response);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_selected_options_with_restricting_filter()
     {
         $response = $this->requestResponse([
@@ -81,7 +82,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_get_filtered_options()
     {
         $response = $this->requestResponse([
@@ -91,7 +92,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_get_filtered_on_nested_attrs_options()
     {
         $response = $this->requestResponse([
@@ -101,7 +102,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_get_options_with_param()
     {
         $response = $this->requestResponse([
@@ -111,7 +112,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_get_options_with_pivot_params()
     {
         $response = $this->requestResponse([
@@ -121,7 +122,7 @@ class SelectTest extends TestCase
         $this->assertTrue($this->whithinResponse($response));
     }
 
-    /** @test */
+    #[Test]
     public function can_paginate()
     {
         $paginate = 0;
@@ -130,7 +131,7 @@ class SelectTest extends TestCase
         $this->assertCount($paginate, $response);
     }
 
-    /** @test */
+    #[Test]
     public function can_use_resource()
     {
         $this->resource = SelectTestResource::class;
@@ -143,7 +144,7 @@ class SelectTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function can_use_accessors()
     {
         $this->appends = ['custom'];
