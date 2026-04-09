@@ -17,15 +17,13 @@ trait TypeaheadBuilder
 
     private function convert(Request $request)
     {
-        $params = json_decode($request->get('params'));
-
         $request->replace([
             'query' => $request->get('query'),
             'paginate' => $request->get('paginate'),
-            'params' => json_encode($params?->params ?? null),
+            'params' => $request->get('params')['params'] ?? null,
             'searchMode' => $request->get('searchMode'),
-            'pivotParams' => json_encode($params?->pivot ?? null),
-            'customParams' => json_encode($params?->custom ?? null),
+            'pivotParams' => $request->get('params')['pivot'] ?? null,
+            'customParams' => $request->get('params')['custom'] ?? null,
         ]);
     }
 }
