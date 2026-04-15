@@ -197,16 +197,25 @@ class Options implements Responsable
 
     private function params(): Collection
     {
-        return new Collection($this->request->get('params'));
+        return new Collection($this->sanitize($this->request->get('params')));
     }
 
     private function pivotParams(): Collection
     {
-        return Collection::wrap($this->request->get('pivotParams'))->dot();
+        return Collection::wrap($this->sanitize($this->request->get('pivotParams')))->dot();
     }
 
     private function isNested($attribute): bool
     {
         return Str::contains($attribute, '.');
+    }
+
+    private function sanitize(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
     }
 }
