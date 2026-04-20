@@ -156,6 +156,30 @@ class SelectTest extends TestCase
         );
     }
 
+    #[Test]
+    public function can_use_track_by_from_request()
+    {
+        $response = $this->requestResponse([
+            'trackBy' => 'email',
+            'value' => $this->testModel->email,
+            'query' => 'NO_VALUE',
+        ]);
+
+        $this->assertCount(1, $response);
+        $this->assertSame($this->testModel->email, $response->first()->email);
+    }
+
+    #[Test]
+    public function can_use_requested_search_mode()
+    {
+        $response = $this->requestResponse([
+            'query' => substr($this->testModel->email, 0, 5),
+            'searchMode' => 'startsWith',
+        ]);
+
+        $this->assertTrue($this->whithinResponse($response));
+    }
+
     private function whithinResponse($response)
     {
         return $response->pluck('email')
