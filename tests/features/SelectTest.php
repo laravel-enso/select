@@ -7,8 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use LaravelEnso\Select\Traits\OptionsBuilder;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class SelectTest extends TestCase
 {
@@ -161,8 +161,8 @@ class SelectTest extends TestCase
     {
         $response = $this->requestResponse([
             'trackBy' => 'email',
-            'value' => $this->testModel->email,
-            'query' => 'NO_VALUE',
+            'value'   => $this->testModel->email,
+            'query'   => 'NO_VALUE',
         ]);
 
         $this->assertCount(1, $response);
@@ -173,7 +173,7 @@ class SelectTest extends TestCase
     public function can_use_requested_search_mode()
     {
         $response = $this->requestResponse([
-            'query' => substr($this->testModel->email, 0, 5),
+            'query'      => substr($this->testModel->email, 0, 5),
             'searchMode' => 'startsWith',
         ]);
 
@@ -214,7 +214,7 @@ class SelectTest extends TestCase
     private function createRelation()
     {
         return SelectRelation::create([
-            'name' => $this->faker->name,
+            'name'      => $this->faker->name,
             'parent_id' => $this->testModel->id,
         ]);
     }

@@ -18,11 +18,11 @@ trait TypeaheadBuilder
     private function convert(Request $request)
     {
         $request->replace([
-            'query' => $request->get('query'),
-            'paginate' => $request->get('paginate'),
-            'params' => $request->get('params')['params'] ?? null,
-            'searchMode' => $request->get('searchMode'),
-            'pivotParams' => $request->get('params')['pivot'] ?? null,
+            'query'        => $request->get('query'),
+            'paginate'     => $request->get('paginate'),
+            'params'       => $request->get('params')['params'] ?? null,
+            'searchMode'   => $request->get('searchMode'),
+            'pivotParams'  => $request->get('params')['pivot'] ?? null,
             'customParams' => $request->get('params')['custom'] ?? null,
         ]);
     }

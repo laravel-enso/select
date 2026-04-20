@@ -141,7 +141,7 @@ class Options implements Responsable
     {
         $search = $this->request->get('query');
 
-        if (! $search) {
+        if (!$search) {
             return $this;
         }
 
@@ -212,7 +212,7 @@ class Options implements Responsable
 
     private function sanitize(mixed $value): mixed
     {
-        if (! is_string($value)) {
+        if (!is_string($value)) {
             return $value;
         }
 
