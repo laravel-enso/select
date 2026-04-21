@@ -1,6 +1,6 @@
 {
     "name": "laravel-enso/select",
-    "description": "Bootstrap Select data builder with server-side data fetching capability and a VueJS component",
+    "description": "Server-side option and typeahead builders for Laravel Enso",
     "keywords": [
         "laravel-enso",
         "select",
