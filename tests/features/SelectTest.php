@@ -199,7 +199,7 @@ class SelectTest extends TestCase
         );
     }
 
-    public function query()
+    public function query($uri, array $data = [], array $headers = [])
     {
         return SelectTestModel::query();
     }
